@@ -1,0 +1,20 @@
+package: ynewsletter
+version: '1.0'
+author: Jan Kristinus
+supportpage: www.github.org/yakamara/redaxo_ynewsletter
+
+page:
+    title: 'translate:ynewsletter_send'
+    pjax: true
+    block: ynewsletter
+    icon: rex-icon fa-hand-spock-o
+    subpages:
+        send:
+            title: 'translate:ynewsletter_send'
+
+requires:
+    packages:
+        phpmailer: '^2.1'
+        yform: '^2.2'
+    redaxo: '^5.3'
+

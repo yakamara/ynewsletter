@@ -1,0 +1,24 @@
+ynewsletter = YNewsletter
+navigation_ynewsletter = YNewsletter
+ynewsletter_newsletter = Newsletter
+ynewsletter_send = Versand
+ynewsletter_log = Log
+ynewsletter_log_userid = User-Id
+ynewsletter_log_status = Status
+ynewsletter_datetime = Erstellungsdatum
+
+ynewsletter_key = Key
+ynewsletter_subject = Subject
+ynewsletter_emailfrom = E-Mail-Absender
+ynewsletter_article = Article
+ynewsletter_status = Status
+ynewsletter_status_open = offen
+ynewsletter_status_in_action = beim Senden
+ynewsletter_status_sent = abgeschickt
+
+ynewsletter_msg_pleaseentersubject = Bitte einen Subject eingeben
+ynewsletter_msg_pleaseenteremail = Bitte einen Absender eintragen
+ynewsletter_msg_pleaseentercorrectemail = Bitte einen richtigen E-Mail-Absender eintragen
+ynewsletter_msg_pleaseenterkey = Bitte eine Kennung/Key eingeben
+ynewsletter_msg_pleaseenteruniquekey = Bitte ein eindeutige Kennung/Key eingeben
+ynewsletter_msg_pleaseselectarticle = Bitte einen Artikel auswählen
