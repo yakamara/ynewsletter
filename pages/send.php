@@ -4,18 +4,145 @@ echo rex_view::title($this->i18n('ynewsletter'));
 
 
 
-echo "Formular mit Auswahl des Newsletters";
+$newsletter_id = rex_request('newsletter_id','int',0);
+$package_size = rex_request('package_size','int',50);
+$ynewsletter_send = rex_request('ynewsletter_send','int',0);
 
-// Newsletter auswählen / mit open
-// Usertabelle wählen [id, email] mit in die newsletter definition
+if ($ynewsletter_send == 1) {
 
-// Intervallversand
-// - Kennung Front und Backend beachten
+    if ($newsletter_id > 0) {
+        $newsletter = rex_ynewsletter::get($newsletter_id);
+        if (!$newsletter) {
+            echo rex_view::error(rex_i18n::translate('translate:ynewsletter_msg_newsletternotavailable'));
 
-// Cronjobversand
-// -
+        } else if ($newsletter->status == 1) {
+            echo rex_view::warning(rex_i18n::translate('translate:ynewsletter_msg_newslettersent'));
 
-$usertable = 'rex_ycom_user';
+        } else {
+
+            // TODO:
+            $ready = $newsletter->sendPackage(2);
+
+            if ($ready) {
+                echo rex_view::success($this->i18n('ynewsletter_msg_emailssent', $newsletter->ynewsletter_user_count));
+
+            } else {
+                echo rex_view::warning($this->i18n('ynewsletter_msg_send', $newsletter->ynewsletter_user_count, $newsletter->ynewsletter_sent_count));
+
+                echo '<script>
+                    function win_reload(){ window.location.reload(); }
+                    setTimeout("win_reload()", 5000); // Millisekunden 1000 = 1 Sek * 80
+                </script>';
+
+            }
+
+        }
+    }
+
+}
+
+
+$formElements = [];
+
+$newsletterSelect = new rex_select();
+$newsletterSelect->setId('rex-ynewsletter-newsletter');
+$newsletterSelect->setName('newsletter_id');
+$newsletterSelect->setAttribute('class', 'form-control');
+foreach (rex_ynewsletter::query()->orderBy('id', 'desc')->find() as $newsletter) {
+
+    if ($newsletter->status == 1) {
+        $status_name = rex_i18n::translate('translate:ynewsletter_status_sent');
+
+    } else {
+        $status_name = rex_i18n::translate('translate:ynewsletter_status_open');
+
+    }
+
+    $name = 'key: '.$newsletter->key. ' / Subject: '.$newsletter->subject . ' / Status: '.$status_name.'';
+    $newsletterSelect->addOption($name, $newsletter->id);
+    if ($newsletter_id == $newsletter->id) {
+        $newsletterSelect->setSelected($newsletter->id);
+    }
+
+}
+
+$n = [];
+$n['header'] = '<div id="rex-js-ynewsletter-newsletter-div">';
+$n['label'] = '<label for="rex-ynewsletter-newsletter">' . rex_i18n::msg('ynewsletter_select_newsletter') . '</label>';
+$n['field'] = $newsletterSelect->get();
+$n['footer'] = '</div>';
+$formElements[] = $n;
+
+
+
+$packageSelect = new rex_select();
+$packageSelect->setId('rex-ynewsletter-package');
+$packageSelect->setName('package_size');
+$packageSelect->setAttribute('class', 'form-control');
+$packageSelect->addOption(rex_i18n::translate('translate:ynewsletter_package_all'), '0');
+$packageSelect->addOption(rex_i18n::translate('translate:ynewsletter_package_10'), '10');
+$packageSelect->addOption(rex_i18n::translate('translate:ynewsletter_package_50') , '50');
+$packageSelect->addOption(rex_i18n::translate('translate:ynewsletter_package_100'), '100');
+$packageSelect->setSelected($package_size);
+
+$n = [];
+$n['header'] = '<div id="rex-js-ynewsletter-package-div">';
+$n['label'] = '<label for="rex-ynewsletter-package">' . rex_i18n::msg('ynewsletter_select_package') . '</label>';
+$n['field'] = $packageSelect->get();
+$n['footer'] = '</div>';
+$formElements[] = $n;
+
+$fragment = new rex_fragment();
+$fragment->setVar('elements', $formElements, false);
+$content = '<fieldset><input type="hidden" name="ynewsletter_send" value="1" />';
+$content .= $fragment->parse('core/form/form.php');
+$content .= '</fieldset>';
+
+$formElements = [];
+$n = [];
+$n['field'] = '<button class="btn btn-save rex-form-aligned" type="submit" name="export" value="' . rex_i18n::msg('ynewsletter_form_sent') . '">' . rex_i18n::msg('ynewsletter_form_sent') . '</button>';
+$formElements[] = $n;
+
+$fragment = new rex_fragment();
+$fragment->setVar('elements', $formElements, false);
+$buttons = $fragment->parse('core/form/submit.php');
+
+$fragment = new rex_fragment();
+$fragment->setVar('class', 'edit', false);
+$fragment->setVar('title', rex_i18n::msg('ynewsletter_send'), false);
+$fragment->setVar('body', $content, false);
+$fragment->setVar('buttons', $buttons, false);
+$content = $fragment->parse('core/page/section.php');
+
+
+
+$content = '
+<form action="' . rex_url::currentBackendPage() . '" data-pjax="false" method="post">
+    ' . $content . '
+</form>';
+
+/*
+
+<script type="text/javascript">
+    <!--
+
+    (function($) {
+        return;
+        var currentShown = null;
+        $("#rex-js-exporttype-sql, #rex-js-exporttype-files").click(function(){
+            if(currentShown) currentShown.hide();
+
+            var effectParamsId = "#" + $(this).attr("id") + "-div";
+            currentShown = $(effectParamsId);
+            currentShown.fadeIn();
+        }).filter(":checked").click();
+    })(jQuery);
+
+    //-->
+</script>';
+*/
+
+echo $content;
 
 
 
@@ -28,22 +155,18 @@ $usertable = 'rex_ycom_user';
 
 
 
-// php mailer aber auch sendgrid
-
-// erkennen welche Tabellen für den Userversand möglich sind
-// usertabelle: id,email rest optional
-
-// tracking vom versand // newsletter_id/email/user_id/versand ok // zeitstempel
-
-// Newsletter verarbeiten für den Versand
-// Artikelversand und YForm Templateversand ?
 
 
 
-//  - userdaten in den Newsletter einspielen REX_VAR // REX_NEWSLETTER_USERDATA
-//  - BE vs FE Problem beachten
-// Tracken von E-Mail Versand. // Obwohl das auch phpmailer macht
-//
+
+
+
+
+
+
+
+
+
 
 
 

@@ -7,7 +7,7 @@ if (rex::isBackend()) {
 
         if ($plugin) {
             $pages = $plugin->getProperty('pages');
-            $ycom_tables = ['rex_ynewsletter', 'rex_ynewsletter_log'];
+            $ycom_tables = ['rex_ynewsletter', 'rex_ynewsletter_log', 'rex_ynewsletter_group'];
 
             if (isset($pages) && is_array($pages)) {
                 foreach ($pages as $page) {
@@ -25,4 +25,5 @@ if (rex::isBackend()) {
 
 rex_yform_manager_dataset::setModelClass('rex_ynewsletter', rex_ynewsletter::class);
 rex_yform_manager_dataset::setModelClass('rex_ynewsletter_log', rex_ynewsletter_log::class);
+rex_yform_manager_dataset::setModelClass('rex_ynewsletter_group', rex_ynewsletter_group::class);
 

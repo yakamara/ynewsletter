@@ -9,12 +9,12 @@ ynewsletter_datetime = Erstellungsdatum
 
 ynewsletter_key = Key
 ynewsletter_subject = Subject
-ynewsletter_emailfrom = E-Mail-Absender
+ynewsletter_email_from = E-Mail-Absender
+ynewsletter_email_from_name = E-Mail-Absender Name
 ynewsletter_article = Article
 ynewsletter_status = Status
 ynewsletter_status_open = offen
-ynewsletter_status_in_action = beim Senden
-ynewsletter_status_sent = abgeschickt
+ynewsletter_status_sent = versendet
 
 ynewsletter_msg_pleaseentersubject = Bitte einen Subject eingeben
 ynewsletter_msg_pleaseenteremail = Bitte einen Absender eintragen
@@ -22,3 +22,31 @@ ynewsletter_msg_pleaseentercorrectemail = Bitte einen richtigen E-Mail-Absender 
 ynewsletter_msg_pleaseenterkey = Bitte eine Kennung/Key eingeben
 ynewsletter_msg_pleaseenteruniquekey = Bitte ein eindeutige Kennung/Key eingeben
 ynewsletter_msg_pleaseselectarticle = Bitte einen Artikel auswählen
+ynewsletter_msg_pleasecreateagroup = Bitte zunächst eine User-Gruppe erstellen
+ynewsletter_msg_pleaseenteremailfield = Bitte das E-Mail-Feld der User-Tabelle eintragen
+ynewsletter_msg_pleaseentername = Bitte die Gruppenbezeichnung eingeben
+ynewsletter_msg_pleaseentertable = Bitte die User-Tabelle eintragen
+
+ynewsletter_msg_newsletternotavailable = Newsletter wurde nicht gefunden
+ynewsletter_msg_newslettersent = Newsletter wurde bereits verschickt
+ynewsletter_msg_emailssent = Newsletter wurde erfolgreich verschickt [{0} E-Mails]
+
+ynewsletter_groups = Gruppen
+ynewsletter_group = Gruppe
+ynewsletter_group_name = Name
+ynewsletter_group_table = Tabelle
+ynewsletter_group_filter = Filter
+ynewsletter_group_filter_info = Bitte untereinander die Where Abfragen auflisten. Z.B. newsletter=1
+ynewsletter_group_emailfield = E-Mail Feld
+ynewsletter_group_emailfield_info = Bitte das Tabellenfeld für E-Mail eintragen
+
+ynewsletter_select_package = Paket auswählen
+ynewsletter_select_newsletter = Newsletter
+ynewsletter_package_all = Alle User auf einen Schlag verschicken
+ynewsletter_package_10 = Immer 10 User-Pakete als Intervall verschicken
+ynewsletter_package_50 = Immer 50 User-Pakete als Intervall verschicken
+ynewsletter_package_100 = Immer 100 User-Pakete als Intervall verschicken
+
+ynewsletter_msg_send = Newsletter wird versendet: Empfänger gesamt [{0}] / Bisher versendete E-Mails [{1}]
+
+ynewsletter_form_sent = Newsletter abschicken
