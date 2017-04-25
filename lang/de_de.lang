@@ -29,7 +29,7 @@ ynewsletter_msg_pleaseentertable = Bitte die User-Tabelle eintragen
 
 ynewsletter_msg_newsletternotavailable = Newsletter wurde nicht gefunden
 ynewsletter_msg_newslettersent = Newsletter wurde bereits verschickt
-ynewsletter_msg_emailssent = Newsletter wurde erfolgreich verschickt [{0} E-Mails]
+ynewsletter_msg_emailssent = Newsletter "{1}" wurde erfolgreich verschickt [{0} E-Mails]
 
 ynewsletter_groups = Gruppen
 ynewsletter_group = Gruppe
@@ -47,6 +47,8 @@ ynewsletter_package_10 = Immer 10 User-Pakete als Intervall verschicken
 ynewsletter_package_50 = Immer 50 User-Pakete als Intervall verschicken
 ynewsletter_package_100 = Immer 100 User-Pakete als Intervall verschicken
 
-ynewsletter_msg_send = Newsletter wird versendet: Empfänger gesamt [{0}] / Bisher versendete E-Mails [{1}]
+ynewsletter_msg_send = Newsletter wird versendet: Empfänger gesamt [{0}] / Bisher versendete E-Mails [{1}] / Bitte warten - Versand läuft, Seite wird sich gleich neu laden.
 
 ynewsletter_form_sent = Newsletter abschicken
+
+ynewsletter_msg_noopennewsletteravailable = Keine offenen Newsletter (mehr) vorhanden.

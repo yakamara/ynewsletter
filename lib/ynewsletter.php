@@ -4,13 +4,14 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
 {
 
 
-    public function sendPackage( $size = 20)
+    public function sendPackage( $size = 20 )
     {
         if ($size == 0) {
             return $this->sendAll();
         }
         $users = $this->getUserOffset();
-        $users = array_splice ( $users, 1, $size );
+        $users = array_splice ( $users, 0, $size );
+
         return $this->send($users);
     }
 
@@ -57,8 +58,8 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
             // TODO: $mail->FromName = $this->email_from_name;
             $mail->Subject = $this->subject;
             // TODO: $mail->AddAttachment($attachment, $name);
-            $mail->Body = $plain_content;
-            $mail->AltBody = $html_content;
+            $mail->Body = $html_content;
+            $mail->AltBody = $plain_content;
 
             $status = 0;
             if ($mail->Send()) {
