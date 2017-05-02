@@ -38,12 +38,15 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
         //      userdaten in den Newsletter einspielen REX_VAR // REX_NEWSLETTER_USERDATA
         //      BE vs FE Problem beachten
 
+
+        rex::setProperty('redaxo', false);
         $article = new rex_article_content($article_id);
         $html_content = $article->getArticleTemplate();
 
         $plain_content = $article->getArticle();
         $plain_content = strip_tags($plain_content);
         $plain_content = html_entity_decode($plain_content);
+        rex::setProperty('redaxo', true);
 
         foreach($users as $user) {
 
@@ -55,7 +58,7 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
             $mail->AddAddress($email);
             // TODO: AddAddressName
             $mail->From = $this->email_from;
-            // TODO: $mail->FromName = $this->email_from_name;
+            $mail->FromName = $this->email_from_name;
             $mail->Subject = $this->subject;
             // TODO: $mail->AddAttachment($attachment, $name);
             $mail->Body = $html_content;
