@@ -22,7 +22,7 @@ if ($ynewsletter_send == 1) {
             $ready = $newsletter->sendPackage($package_size);
 
             if ($ready) {
-                echo rex_view::success($this->i18n('ynewsletter_msg_emailssent', $newsletter->ynewsletter_user_count, ($newsletter->subject . ' ['.$newsletter->id.']') ));
+                echo rex_view::success($this->i18n('ynewsletter_msg_emailssent', $newsletter->ynewsletter_user_count, ($newsletter->subject . ' [id='.$newsletter->id.']') ));
 
             } else {
                 echo rex_view::warning($this->i18n('ynewsletter_msg_send', $newsletter->ynewsletter_user_count, $newsletter->ynewsletter_sent_count));
@@ -66,7 +66,9 @@ if(count($open_newsletters) == 0) {
 
         }
 
-        $name = 'Subject: '.$newsletter->subject . ' ['.$newsletter->id.'] / Status: '.$status_name.'';
+        $group = $newsletter->getRelatedDataset('group');
+
+        $name = '[id='.$newsletter->id.'] '.rex_i18n::msg("ynewsletter_subject").': '.$newsletter->subject . ' | '.rex_i18n::msg("ynewsletter_emails").'='.$group->countUsers().' | '.rex_i18n::msg("ynewsletter_status").': '.$status_name.'';
         $newsletterSelect->addOption($name, $newsletter->id);
         if ($newsletter_id == $newsletter->id) {
             $newsletterSelect->setSelected($newsletter->id);
