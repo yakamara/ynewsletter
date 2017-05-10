@@ -125,7 +125,8 @@ if(count($open_newsletters) == 0) {
 
 
     $content = '
-<form action="' . rex_url::currentBackendPage() . '" data-pjax="false" method="post">
+<form action="index.php" data-pjax="false" method="get">
+<input type="hidden" name="page" value="ynewsletter/send" />
     ' . $content . '
 </form>';
 

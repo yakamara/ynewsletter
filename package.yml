@@ -5,7 +5,7 @@ supportpage: www.github.org/yakamara/redaxo_ynewsletter
 
 page:
     title: 'translate:ynewsletter_send'
-    pjax: true
+    pjax: false
     block: ynewsletter
     icon: rex-icon fa-hand-spock-o
     subpages:
