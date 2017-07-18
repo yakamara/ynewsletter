@@ -38,27 +38,30 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
         //      userdaten in den Newsletter einspielen REX_VAR // REX_NEWSLETTER_USERDATA
         //      BE vs FE Problem beachten
 
-
-        rex::setProperty('redaxo', false);
         $article = new rex_article_content($article_id);
-        $html_content = $article->getArticleTemplate();
+        $org_html_content = $article->getArticleTemplate();
 
-        $plain_content = $article->getArticle();
-        $plain_content = strip_tags($plain_content);
-        $plain_content = html_entity_decode($plain_content);
-        rex::setProperty('redaxo', true);
+        $org_plain_content = $article->getArticle();
+        $org_plain_content = strip_tags($org_plain_content);
+        $org_plain_content = html_entity_decode($org_plain_content);
 
         foreach($users as $user) {
 
             $email = $user[$group->email];
 
-            // TODO: replace vars
+            $html_content = $org_html_content;
+            $plain_content = $org_plain_content;
 
+            foreach (array_keys($user) as $field) {
+            	$html_content = str_replace(['%7B'.$field.'%7D', '{'.$field.'}'], [$user[$field], $user[$field]], $html_content);
+            	$plain_content = str_replace(['%7B'.$field.'%7D', '{'.$field.'}'], [$user[$field], $user[$field]], $plain_content);
+            }
+            
             $mail = new rex_mailer();
             $mail->AddAddress($email);
             // TODO: AddAddressName
             $mail->From = $this->email_from;
-            $mail->FromName = $this->email_from_name;
+            // TODO: $mail->FromName = $this->email_from_name;
             $mail->Subject = $this->subject;
             // TODO: $mail->AddAttachment($attachment, $name);
             $mail->Body = $html_content;
