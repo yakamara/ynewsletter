@@ -52,3 +52,11 @@ ynewsletter_msg_send = Newsletter wird versendet: Empfänger gesamt [{0}] / Bish
 ynewsletter_form_sent = Newsletter abschicken
 
 ynewsletter_msg_noopennewsletteravailable = Keine offenen Newsletter (mehr) vorhanden.
+
+ynewsletter_validate_auth_name = Authentifizieren
+ynewsletter_validate_auth_table = Tabelle
+ynewsletter_validate_auth_request = REQUEST-Werte auf die geprüft werden sollen
+ynewsletter_validate_auth_condition = Bedingungen für die WHERE-Abfrage, Bsp: <code>status=0</code>
+ynewsletter_validate_auth_message = Fehlermeldung
+ynewsletter_validate_auth_fields = Felder (kommasepariert) angeben, um die gespeicherten im E-Mail-Template nutzen zu können
+ynewsletter_validate_auth_description = Anmeldung validieren
