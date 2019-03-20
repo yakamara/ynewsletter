@@ -25,7 +25,6 @@ class rex_yform_validate_ynewsletter_auth extends rex_yform_validate_abstract
         }
 
         $table = $this->getElement('table');
-
         $sql = rex_sql::factory();
         if ($this->params['debug']) {
             $sql->setDebug();
@@ -62,7 +61,6 @@ class rex_yform_validate_ynewsletter_auth extends rex_yform_validate_abstract
             'type' => 'validate',
             'name' => 'ynewsletter_auth',
             'values' => [
-                'name' => ['type' => 'select_name', 'label' => rex_i18n::msg('ynewsletter_validate_auth_name')],
                 'table' => ['type' => 'choice', 'label' => rex_i18n::msg('ynewsletter_validate_auth_table'), 'choices' => 'SELECT table_name AS id,  table_name AS name FROM information_schema.tables WHERE table_schema = DATABASE() ORDER BY name'],
                 'request' => ['type' => 'text', 'label' => rex_i18n::msg('ynewsletter_validate_auth_request')],
                 'condition' => ['type' => 'text', 'label' => rex_i18n::msg('ynewsletter_validate_auth_condition')],
