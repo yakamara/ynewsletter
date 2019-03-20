@@ -1,5 +1,5 @@
 package: ynewsletter
-version: '1.0'
+version: '1.1-dev'
 author: Jan Kristinus
 supportpage: www.github.org/yakamara/redaxo_ynewsletter
 
@@ -14,7 +14,6 @@ page:
 
 requires:
     packages:
-        phpmailer: '^2.1'
-        yform: '^2.2'
-    redaxo: '^5.3'
+        yform: '^3'
+    redaxo: '^5.7'
 
