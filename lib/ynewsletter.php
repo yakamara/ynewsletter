@@ -2,15 +2,17 @@
 
 class rex_ynewsletter extends \rex_yform_manager_dataset
 {
+    public $ynewsletter_log_count;
+    public $ynewsletter_sent_count;
+    public $ynewsletter_user_count;
 
-
-    public function sendPackage( $size = 20 )
+    public function sendPackage($size = 20)
     {
         if ($size == 0) {
             return $this->sendAll();
         }
         $users = $this->getUserOffset();
-        $users = array_splice ( $users, 0, $size );
+        $users = array_splice($users, 0, $size);
 
         return $this->send($users);
     }
@@ -26,7 +28,6 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
         if (count($users) == 0) {
             $this->setValue('status', 1)->save();
             return true;
-
         }
 
         $group = $this->getRelatedDataset('group');
@@ -38,18 +39,14 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
         //      userdaten in den Newsletter einspielen REX_VAR // REX_NEWSLETTER_USERDATA
         //      BE vs FE Problem beachten
 
-
-        rex::setProperty('redaxo', false);
         $article = new rex_article_content($article_id);
         $html_content = $article->getArticleTemplate();
 
         $plain_content = $article->getArticle();
         $plain_content = strip_tags($plain_content);
         $plain_content = html_entity_decode($plain_content);
-        rex::setProperty('redaxo', true);
 
-        foreach($users as $user) {
-
+        foreach ($users as $user) {
             $email = $user[$group->email];
 
             // TODO: replace vars
@@ -58,7 +55,7 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
             $mail->AddAddress($email);
             // TODO: AddAddressName
             $mail->From = $this->email_from;
-            $mail->FromName = $this->email_from_name;
+            // TODO: $mail->FromName = $this->email_from_name;
             $mail->Subject = $this->subject;
             // TODO: $mail->AddAttachment($attachment, $name);
             $mail->Body = $html_content;
@@ -77,30 +74,29 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
                 ->setValue('status', $status)
                 ->save();
 
-            $this->ynewsletter_sent_count++;
-
+            ++$this->ynewsletter_sent_count;
         }
 
         return false;
-
     }
-
 
     public function getUserOffset()
     {
-        $group = $this->getRelatedDataset('group');
+        $groups = $this->getRelatedCollection('group');
 
         // build query
-        $query = 'select * from `'.$group->table.'`';
-        $group_filters = trim($group->filter);
-        if ($group_filters != "") {
-            foreach(explode("\n", $group_filters) as $group_filter) {
-                $filter[] = '('.$group_filter.')';
+        foreach ($groups as $group) {
+            $query = 'select * from `'.$group->table.'`';
+            $group_filters = trim($group->filter);
+            if ($group_filters != '') {
+                foreach (explode("\n", $group_filters) as $group_filter) {
+                    $filter[] = '('.trim($group_filter).')';
+                }
+                $query .= ' where ' . implode(' and ', $filter);
             }
-            $query .= ' where ' . implode(' and ', $filter);
-        }
-        foreach(rex_sql::factory()->getArray($query) as $q) {
-            $send_list[$q['id']] = $q;
+            foreach (rex_sql::factory()->getArray($query) as $q) {
+                $send_list[$q['id']] = $q;
+            }
         }
 
         $this->ynewsletter_user_count = count($send_list);
@@ -114,14 +110,12 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
 
         // remove log users from send_list
         $this->ynewsletter_sent_count = $this->ynewsletter_log_count;
-        foreach($log_users as $log_user) {
+        foreach ($log_users as $log_user) {
             if (isset($send_list[$log_user->user_id])) {
                 unset($send_list[$log_user->user_id]);
             }
         }
 
         return $send_list;
-
     }
-
 }
