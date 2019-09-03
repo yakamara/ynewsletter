@@ -59,7 +59,7 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
             $mail->Subject = $this->subject;
             // TODO: $mail->AddAttachment($attachment, $name);
             $mail->Body = $html_content;
-            $mail->AltBody = $plain_content;
+            $mail->AltBody = self::optimizeTextBody($plain_content);
 
             $status = 0;
             if ($mail->Send()) {
@@ -117,5 +117,11 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
         }
 
         return $send_list;
+    }
+
+    public static function optimizeTextBody($str)
+    {
+        $str = str_replace("\r", '', $str);
+        return preg_replace( "/\n{2,}/", "\n\n", $str );
     }
 }
