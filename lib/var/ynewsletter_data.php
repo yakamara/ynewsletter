@@ -1,9 +1,7 @@
 <?php
 
 /**
- * REX_VALUE[1],.
- *
- * @package redaxo\structure\content
+ * REX_YNEWSLETTER_DATA[1]
  */
 class rex_var_ynewsletter_data extends rex_var
 {
@@ -32,7 +30,6 @@ class rex_var_ynewsletter_data extends rex_var
             $value = nl2br($value);
 
         }
-
         return self::quote($value);
 
     }

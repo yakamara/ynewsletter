@@ -33,23 +33,17 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
         $group = $this->getRelatedDataset('group');
         $article_id = $this->article_id;
 
-        // TODO: noch sendtyp bauen [phpmailer/sendgrid] / abstract bauen
         // TODO: noch contenttyp bauen [article/yform-email-templates] / abstract bauen
-        // TODO: normal (static), wie baue ich persönliche Newsletter (replace), wie ersetze ich userinfos am besten (replace), wie erstelle ich individuelle Newsletter am besten (php)
-        //      userdaten in den Newsletter einspielen REX_VAR // REX_NEWSLETTER_USERDATA
-        //      BE vs FE Problem beachten
 
         $article = new rex_article_content($article_id);
-        $html_content = $article->getArticleTemplate();
+        $Body = $article->getArticleTemplate();
 
-        $plain_content = $article->getArticle();
-        $plain_content = strip_tags($plain_content);
-        $plain_content = html_entity_decode($plain_content);
+        $AltBody = $article->getArticle();
+        $AltBody = strip_tags($AltBody);
+        $AltBody = html_entity_decode($AltBody);
 
         foreach ($users as $user) {
             $email = $user[$group->email];
-
-            // TODO: replace vars
 
             $mail = new rex_mailer();
             $mail->AddAddress($email);
@@ -58,8 +52,14 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
             // TODO: $mail->FromName = $this->email_from_name;
             $mail->Subject = $this->subject;
             // TODO: $mail->AddAttachment($attachment, $name);
-            $mail->Body = $html_content;
-            $mail->AltBody = self::optimizeTextBody($plain_content);
+
+            $AltBodyUser = rex_var::parse($AltBody, rex_var::ENV_OUTPUT, 'ynewsletter_template', $user);
+            $AltBodyUser = rex_file::getOutput(rex_stream::factory('ynewsletter/plain_content', $AltBodyUser));
+            $mail->AltBody = self::optimizeTextBody($AltBodyUser);
+
+            $BodyUser = rex_var::parse($Body, rex_var::ENV_OUTPUT, 'ynewsletter_template', $user);
+            $BodyUser = rex_file::getOutput(rex_stream::factory('ynewsletter/plain_content', $BodyUser));
+            $mail->Body = $BodyUser;
 
             $status = 0;
             if ($mail->Send()) {
@@ -122,6 +122,6 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
     public static function optimizeTextBody($str)
     {
         $str = str_replace("\r", '', $str);
-        return preg_replace( "/\n{2,}/", "\n\n", $str );
+        return preg_replace( "/[ \n]{2,}/", "\n\n", $str );
     }
 }
