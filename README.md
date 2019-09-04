@@ -83,11 +83,3 @@ validate|ynewsletter_auth|%TABLE%|activation_key=activation_key,email=email|stat
 
 action|db|%TABLE%|main_where
 ```
-
-Last Changes
--------
-
-### Version 1.0 // 26.04.2017
-
-* Erste Version mit reinen Basisfunktionen.
-
