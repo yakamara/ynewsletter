@@ -49,7 +49,7 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
             $mail->AddAddress($email);
             // TODO: AddAddressName
             $mail->From = $this->email_from;
-            // TODO: $mail->FromName = $this->email_from_name;
+            $mail->FromName = $this->email_from_name;
             $mail->Subject = $this->subject;
             // TODO: $mail->AddAttachment($attachment, $name);
 
