@@ -24,7 +24,7 @@ class rex_yform_validate_ynewsletter_auth extends rex_yform_validate_abstract
             $queryParams[$label] = $value;
         }
 
-        $table = $this->getElement('table');
+        $table = $this->getElement('table_name');
         $sql = rex_sql::factory();
         if ($this->params['debug']) {
             $sql->setDebug();
