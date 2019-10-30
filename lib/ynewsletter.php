@@ -86,7 +86,7 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
 
         // build query
         foreach ($groups as $group) {
-            $query = 'select * from `'.$group->table.'`';
+            $query = 'select * from `'.$group->table_name.'`';
             $group_filters = trim($group->filter);
             if ($group_filters != '') {
                 foreach (explode("\n", $group_filters) as $group_filter) {
