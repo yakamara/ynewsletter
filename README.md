@@ -83,3 +83,8 @@ validate|ynewsletter_auth|%TABLE%|activation_key=activation_key,email=email|stat
 
 action|db|%TABLE%|main_where
 ```
+### Platzhalter für die Verwendung in Templates, Modulen etc.
+
+```
+REX_YNEWSLETTER_DATA[field="meinfeld"]
+```
