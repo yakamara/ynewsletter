@@ -11,6 +11,18 @@
 * Über Versand den entsprechenden Newsletter im Intervall oder als Paket verschicken
 
 
+### Rechte
+
+* Da die Tabellen über die YForm verwaltet werden, muss man hierrüber an die User Tabellenrechte geben.
+* Nur ein Admin kann die Gruppen anlegen
+
+### Platzhalter für die Verwendung in Templates, Modulen, Subject etc.
+
+Hier ein Beispiel für die Verwendung von Ansprachen. Bitte beachten, dass bei Modulen die REX_VALUES mit output="html" verwendet werden müssen, da sonst unerwünschte Quotes auftauchen könnten oder Feldnamen nicht erkannt werden könnten.
+```
+REX_YNEWSLETTER_DATA[field="name" prefix="Sehr geehrte/r Herr/Frau "]
+REX_YNEWSLETTER_DATA[field="name" ifempty="Sehr geehrte Damen und Herren"]
+```
 
 ### Anmeldung erstellen
 
@@ -61,7 +73,7 @@ action|tpl2email|%EMAIL_TEMPLATE_KEY%|email
 ```
 Bitte bestätigen Sie Ihre Registrierung:
 <?php
-$url = rex::getServer().rex_getUrl(%ARTICLE_ID_CONFIRM%,'',[ 'activation_key' => REX_YFORM_DATA[field="activation_key"], 'email' => REX_YFORM_DATA[field="email"] ], '&'); 
+$url = rex::getServer().rex_getUrl(%ARTICLE_ID_CONFIRM%,'',[ 'activation_key' => REX_YFORM_DATA[field="activation_key"], 'email' => REX_YFORM_DATA[field="email"] ], '&');
 $url = str_replace(['./','//','https:/'],['','/','https://'],$url);
 echo $url;
 ?>
@@ -83,8 +95,4 @@ validate|ynewsletter_auth|%TABLE%|activation_key=activation_key,email=email|stat
 
 action|db|%TABLE%|main_where
 ```
-### Platzhalter für die Verwendung in Templates, Modulen etc.
 
-```
-REX_YNEWSLETTER_DATA[field="meinfeld"]
-```
