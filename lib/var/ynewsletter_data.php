@@ -13,9 +13,8 @@ class rex_var_ynewsletter_data extends rex_var
             return false;
         }
 
-        if (!$value = $this->getContextData()[$field]) {
-            $value = '';
-        }
+        $value = $this->getContextData();
+        $value = $value[$field] ?? '';
 
         if ($this->hasArg('isset') && $this->getArg('isset')) {
             return $value ? 'true' : 'false';
