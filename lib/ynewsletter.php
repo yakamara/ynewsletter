@@ -38,9 +38,10 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
         $article = new rex_article_content($article_id);
         $Body = $article->getArticleTemplate();
 
-        $AltBody = $article->getArticle();
-        $AltBody = strip_tags($AltBody);
+        $AltBody = strip_tags($Body);
         $AltBody = html_entity_decode($AltBody);
+
+        $Subject = $this->subject;
 
         foreach ($users as $user) {
             $email = $user[$group->email];
@@ -50,9 +51,12 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
             // TODO: AddAddressName
             $mail->From = $this->email_from;
             $mail->FromName = $this->email_from_name;
-            $mail->Subject = $this->subject;
-            // TODO: $mail->AddAttachment($attachment, $name);
 
+            $SubjectUser = rex_var::parse($Subject, rex_var::ENV_OUTPUT, 'ynewsletter_template', $user);
+            $SubjectUser = rex_file::getOutput(rex_stream::factory('ynewsletter/plain_content', $SubjectUser));
+            $mail->Subject = $SubjectUser;
+
+            // TODO: $mail->AddAttachment($attachment, $name);
             $AltBodyUser = rex_var::parse($AltBody, rex_var::ENV_OUTPUT, 'ynewsletter_template', $user);
             $AltBodyUser = rex_file::getOutput(rex_stream::factory('ynewsletter/plain_content', $AltBodyUser));
             $mail->AltBody = self::optimizeTextBody($AltBodyUser);
