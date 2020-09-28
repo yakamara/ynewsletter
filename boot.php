@@ -1,8 +1,7 @@
 <?php
 
 if (rex::isBackend()) {
-    rex_extension::register('PACKAGES_INCLUDED', function ($params) {
-
+    rex_extension::register('PACKAGES_INCLUDED', static function ($params) {
         $plugin = rex_plugin::get('yform', 'manager');
 
         if ($plugin) {
@@ -15,15 +14,11 @@ if (rex::isBackend()) {
                         $page->setBlock('ynewsletter');
                     }
                 }
-
             }
-
         }
-
     });
 }
 
 rex_yform_manager_dataset::setModelClass('rex_ynewsletter', rex_ynewsletter::class);
 rex_yform_manager_dataset::setModelClass('rex_ynewsletter_log', rex_ynewsletter_log::class);
 rex_yform_manager_dataset::setModelClass('rex_ynewsletter_group', rex_ynewsletter_group::class);
-

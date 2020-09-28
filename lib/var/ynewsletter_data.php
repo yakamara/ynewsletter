@@ -1,13 +1,12 @@
 <?php
 
 /**
- * REX_YNEWSLETTER_DATA[1]
+ * REX_YNEWSLETTER_DATA[1].
  */
 class rex_var_ynewsletter_data extends rex_var
 {
     protected function getOutput()
     {
-
         $field = $this->getArg('field', 0, true);
         if (!in_array($this->getContext(), ['ynewsletter_template'])) { // || !is_numeric($id) || $id < 1 || $id > 20
             return false;
@@ -21,15 +20,12 @@ class rex_var_ynewsletter_data extends rex_var
         }
 
         $output = $this->getArg('output');
-        if ($output == 'html') {
+        if ('html' == $output) {
             $value = str_replace(['<?', '?>'], ['&lt;?', '?&gt;'], $value);
-
-        } else if ($output == 'html') {
+        } elseif ('html' == $output) {
             $value = htmlspecialchars($value);
             $value = nl2br($value);
-
         }
         return self::quote($value);
-
     }
 }

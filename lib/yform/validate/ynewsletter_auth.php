@@ -16,7 +16,7 @@ class rex_yform_validate_ynewsletter_auth extends rex_yform_validate_abstract
             $queryParams[$label] = $value;
         }
 
-        if ($this->getElement('condition') != '') {
+        if ('' != $this->getElement('condition')) {
             $pair = explode('=', $this->getElement('condition'));
             $label = trim($pair[0]);
             $value = trim($pair[1]);
@@ -32,7 +32,7 @@ class rex_yform_validate_ynewsletter_auth extends rex_yform_validate_abstract
 
         $sql->setQuery('SELECT * FROM `'.$table.'` WHERE '.implode(' AND ', $query), $queryParams);
 
-        if ($sql->getRows() != 1) {
+        if (1 != $sql->getRows()) {
             $this->params['warning'][] = 1;
             $this->params['warning_messages'][] = rex_i18n::translate($this->getElement('message'));
         } else {
@@ -41,16 +41,15 @@ class rex_yform_validate_ynewsletter_auth extends rex_yform_validate_abstract
             $this->params['main_id'] = $main_id;
             $this->params['main_table'] = $table;
 
-            if ($this->getElement('fields') != '') {
+            if ('' != $this->getElement('fields')) {
                 foreach (explode(',', $this->getElement('fields')) as $label) {
                     $this->params['value_pool']['email'][$label] = $sql->getValue($label);
                 }
             }
         }
-
     }
 
-    function getDescription()
+    public function getDescription()
     {
         return 'ynewsletter_auth -> Beispiel: validate|ynewsletter_auth|table|label1=request1,label2=request2|status=0|warning_message|Fields for E-Mail-Template';
     }

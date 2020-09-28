@@ -2,28 +2,22 @@
 
 echo rex_view::title($this->i18n('ynewsletter'));
 
+$newsletter_id = rex_request('newsletter_id', 'int', 0);
+$package_size = rex_request('package_size', 'int', 50);
+$ynewsletter_send = rex_request('ynewsletter_send', 'int', 0);
 
-
-$newsletter_id = rex_request('newsletter_id','int',0);
-$package_size = rex_request('package_size','int',50);
-$ynewsletter_send = rex_request('ynewsletter_send','int',0);
-
-if ($ynewsletter_send == 1) {
-
+if (1 == $ynewsletter_send) {
     if ($newsletter_id > 0) {
         $newsletter = rex_ynewsletter::get($newsletter_id);
         if (!$newsletter) {
             echo rex_view::error(rex_i18n::translate('translate:ynewsletter_msg_newsletternotavailable'));
-
-        } else if ($newsletter->status == 1) {
+        } elseif (1 == $newsletter->status) {
             echo rex_view::warning(rex_i18n::translate('translate:ynewsletter_msg_newslettersent'));
-
         } else {
             $ready = $newsletter->sendPackage($package_size);
 
             if ($ready) {
-                echo rex_view::success($this->i18n('ynewsletter_msg_emailssent', $newsletter->ynewsletter_user_count, ($newsletter->subject . ' [id='.$newsletter->id.']') ));
-
+                echo rex_view::success($this->i18n('ynewsletter_msg_emailssent', $newsletter->ynewsletter_user_count, ($newsletter->subject . ' [id='.$newsletter->id.']')));
             } else {
                 echo rex_view::warning($this->i18n('ynewsletter_msg_send', $newsletter->ynewsletter_user_count, $newsletter->ynewsletter_sent_count));
 
@@ -31,25 +25,16 @@ if ($ynewsletter_send == 1) {
                     function win_reload(){ window.location.reload(); }
                     setTimeout("win_reload()", 200); // Millisekunden 1000 = 1 Sek * 80
                 </script>';
-
             }
-
         }
     }
-
-
 }
-
-
 
 $open_newsletters = rex_ynewsletter::query()->where('status', 0)->orderBy('id', 'desc')->find();
 
-if(count($open_newsletters) == 0) {
-
+if (0 == count($open_newsletters)) {
     echo rex_view::warning($this->i18n('ynewsletter_msg_noopennewsletteravailable'));
-
 } else {
-
     $formElements = [];
 
     $newsletterSelect = new rex_select();
@@ -57,23 +42,19 @@ if(count($open_newsletters) == 0) {
     $newsletterSelect->setName('newsletter_id');
     $newsletterSelect->setAttribute('class', 'form-control');
     foreach ($open_newsletters as $newsletter) {
-
-        if ($newsletter->status == 1) {
+        if (1 == $newsletter->status) {
             $status_name = rex_i18n::translate('translate:ynewsletter_status_sent');
-
         } else {
             $status_name = rex_i18n::translate('translate:ynewsletter_status_open');
-
         }
 
         $group = $newsletter->getRelatedDataset('group');
 
-        $name = '[id='.$newsletter->id.'] '.rex_i18n::msg("ynewsletter_subject").': '.$newsletter->subject . ' | '.rex_i18n::msg("ynewsletter_emails", $group->countUsers()).' | '.rex_i18n::msg("ynewsletter_status").': '.$status_name.'';
+        $name = '[id='.$newsletter->id.'] '.rex_i18n::msg('ynewsletter_subject').': '.$newsletter->subject . ' | '.rex_i18n::msg('ynewsletter_emails', $group->countUsers()).' | '.rex_i18n::msg('ynewsletter_status').': '.$status_name.'';
         $newsletterSelect->addOption($name, $newsletter->id);
         if ($newsletter_id == $newsletter->id) {
             $newsletterSelect->setSelected($newsletter->id);
         }
-
     }
 
     $n = [];
@@ -89,7 +70,7 @@ if(count($open_newsletters) == 0) {
     $packageSelect->setAttribute('class', 'form-control');
     $packageSelect->addOption(rex_i18n::translate('translate:ynewsletter_package_all'), '0');
     $packageSelect->addOption(rex_i18n::translate('translate:ynewsletter_package_10'), '10');
-    $packageSelect->addOption(rex_i18n::translate('translate:ynewsletter_package_50') , '50');
+    $packageSelect->addOption(rex_i18n::translate('translate:ynewsletter_package_50'), '50');
     $packageSelect->addOption(rex_i18n::translate('translate:ynewsletter_package_100'), '100');
     $packageSelect->setSelected($package_size);
 
@@ -122,8 +103,6 @@ if(count($open_newsletters) == 0) {
     $fragment->setVar('buttons', $buttons, false);
     $content = $fragment->parse('core/page/section.php');
 
-
-
     $content = '
 <form action="index.php" data-pjax="false" method="get">
 <input type="hidden" name="page" value="ynewsletter/send" />
@@ -131,5 +110,4 @@ if(count($open_newsletters) == 0) {
 </form>';
 
     echo $content;
-
 }

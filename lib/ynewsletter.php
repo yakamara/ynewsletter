@@ -8,7 +8,7 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
 
     public function sendPackage($size = 20)
     {
-        if ($size == 0) {
+        if (0 == $size) {
             return $this->sendAll();
         }
         $users = $this->getUserOffset();
@@ -25,7 +25,7 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
 
     private function send($users)
     {
-        if (count($users) == 0) {
+        if (0 == count($users)) {
             $this->setValue('status', 1)->save();
             return true;
         }
@@ -92,7 +92,7 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
         foreach ($groups as $group) {
             $query = 'select * from `'.$group->table.'`';
             $group_filters = trim($group->filter);
-            if ($group_filters != '') {
+            if ('' != $group_filters) {
                 foreach (explode("\n", $group_filters) as $group_filter) {
                     $filter[] = '('.trim($group_filter).')';
                 }
@@ -126,6 +126,6 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
     public static function optimizeTextBody($str)
     {
         $str = str_replace("\r", '', $str);
-        return preg_replace( "/[ \n]{2,}/", "\n\n", $str );
+        return preg_replace("/[ \n]{2,}/", "\n\n", $str);
     }
 }
