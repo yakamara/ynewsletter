@@ -38,7 +38,8 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
         $article = new rex_article_content($article_id);
         $Body = $article->getArticleTemplate();
 
-        $AltBody = strip_tags($Body);
+        $AltBody = $article->getArticle();
+        $AltBody = strip_tags($AltBody);
         $AltBody = html_entity_decode($AltBody);
 
         $Subject = $this->subject;
