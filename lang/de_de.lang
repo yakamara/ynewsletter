@@ -62,3 +62,5 @@ ynewsletter_validate_auth_condition = Bedingungen für die WHERE-Abfrage, Bsp: <
 ynewsletter_validate_auth_message = Fehlermeldung
 ynewsletter_validate_auth_fields = Felder (kommasepariert) angeben, um die gespeicherten im E-Mail-Template nutzen zu können
 ynewsletter_validate_auth_description = Anmeldung validieren
+
+ynewsletter_docs_intro = Intro

@@ -1,7 +1,5 @@
 <?php
 
-echo rex_view::title($this->i18n('ynewsletter'));
-
 $newsletter_id = rex_request('newsletter_id', 'int', 0);
 $package_size = rex_request('package_size', 'int', 50);
 $ynewsletter_send = rex_request('ynewsletter_send', 'int', 0);

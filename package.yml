@@ -4,15 +4,36 @@ author: Jan Kristinus
 supportpage: www.github.org/yakamara/redaxo_ynewsletter
 
 page:
-    title: 'translate:ynewsletter_send'
+    title: 'translate:ynewsletter'
     pjax: false
     perm: ynewsletter[]
-    block: ynewsletter
-    icon: rex-icon fa-hand-spock-o
+    icon: rex-icon rex-icon-envelope
     subpages:
+        newsletter:
+            title: 'translate:ynewsletter_newsletter'
+            subPath: pages/data_edit.php
+            yformTable: rex_ynewsletter
+        group:
+            title: 'translate:ynewsletter_group'
+            subPath: pages/data_edit.php
+            yformTable: rex_ynewsletter_group
+        log:
+            title: 'translate:ynewsletter_log'
+            subPath: pages/data_edit.php
+            yformTable: rex_ynewsletter_log
         send:
             title: 'translate:ynewsletter_send'
-
+        docs:
+            title: 'Hilfe'
+            perm: admin[]
+            pjax: false
+            itemclass: pull-right
+            subpages:
+                intro:
+                    title: 'translate:ynewsletter_docs_intro'
+                    perm: admin[]
+                    pjax: false
+                    subPath: docs/intro.md
 requires:
     packages:
         yform: '^3'
