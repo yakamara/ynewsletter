@@ -2,6 +2,18 @@ Changelog
 =========
 
 
+Version 1.3 – 30.09.2019
+--------------------------
+
+* Rechte ergänzt für den Versand.
+* Gruppierungfehler behoben
+* CS
+* Docs ergänzt mit Info zum Cronjobversand
+* AltBody wieder auf Artikelcontent beschränkt - keine Template mehr
+* Navigation umgebaut. Kein eigener Block sondern als Reiter.
+
+
+
 Version 1.1 – 24.04.2019
 --------------------------
 
