@@ -16,9 +16,9 @@ if (1 == $ynewsletter_send) {
             $ready = $newsletter->sendPackage($package_size);
 
             if ($ready) {
-                echo rex_view::success($this->i18n('ynewsletter_msg_emailssent', $newsletter->ynewsletter_user_count, ($newsletter->subject . ' [id='.$newsletter->id.']')));
+                echo rex_view::success($this->i18n('ynewsletter_msg_emailssent', $newsletter->ynewsletter_sent_count, ($newsletter->subject . ' [id='.$newsletter->id.']')));
             } else {
-                echo rex_view::warning($this->i18n('ynewsletter_msg_send', $newsletter->ynewsletter_user_count, $newsletter->ynewsletter_sent_count));
+                echo rex_view::warning($this->i18n('ynewsletter_msg_send', $newsletter->ynewsletter_user_count, $newsletter->ynewsletter_log_count));
 
                 echo '<script>
                     function win_reload(){ window.location.reload(); }
@@ -29,7 +29,7 @@ if (1 == $ynewsletter_send) {
     }
 }
 
-$open_newsletters = rex_ynewsletter::query()->where('status', 0)->orderBy('id', 'desc')->find();
+$open_newsletters = rex_ynewsletter::query()->whereRaw('status = 0 OR status = 2')->orderBy('id', 'desc')->find();
 
 if (0 == count($open_newsletters)) {
     echo rex_view::warning($this->i18n('ynewsletter_msg_noopennewsletteravailable'));
@@ -43,6 +43,8 @@ if (0 == count($open_newsletters)) {
     foreach ($open_newsletters as $newsletter) {
         if (1 == $newsletter->status) {
             $status_name = rex_i18n::translate('translate:ynewsletter_status_sent');
+        } elseif ( 2 == $newsletter->status ) {
+            $status_name = rex_i18n::translate('translate:ynewsletter_status_test');
         } else {
             $status_name = rex_i18n::translate('translate:ynewsletter_status_open');
         }

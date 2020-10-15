@@ -46,8 +46,11 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
         $Subject = $this->subject;
 
         foreach ($users as $user) {
-            $email = $user[$group->email];
-
+            if (2 != $this->status) {
+                $email = $user[$group->email];
+            } else {
+                $email = !empty($this->email_test) ? $this->email_test :  $this->email_from;
+            }
             $mail = new rex_mailer();
             $mail->AddAddress($email);
             // TODO: AddAddressName
@@ -73,17 +76,20 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
             }
 
             // add to log
-            $log = rex_ynewsletter_log::create()
-                ->setValue('user_id', $user['id'])
-                ->setValue('newsletter', $this->id)
-                ->setValue('email', $email)
-                ->setValue('status', $status)
-                ->save();
-
+            if (2 != $this->status) {
+                $log = rex_ynewsletter_log::create()
+                    ->setValue('user_id', $user['id'])
+                    ->setValue('newsletter', $this->id)
+                    ->setValue('email', $email)
+                    ->setValue('status', $status)
+                    ->save();
+            }
             ++$this->ynewsletter_sent_count;
         }
 
+        if (2 == $this->status) { return true; }
         return false;
+
     }
 
     public function getUserOffset()
@@ -115,13 +121,14 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
         $this->ynewsletter_log_count = count($log_users);
 
         // remove log users from send_list
-        $this->ynewsletter_sent_count = $this->ynewsletter_log_count;
-        foreach ($log_users as $log_user) {
-            if (isset($send_list[$log_user->user_id])) {
-                unset($send_list[$log_user->user_id]);
+        if (2 != $this->status) {
+            //$this->ynewsletter_sent_count = $this->ynewsletter_log_count;
+            foreach ($log_users as $log_user) {
+                if (isset($send_list[$log_user->user_id])) {
+                    unset($send_list[$log_user->user_id]);
+                }
             }
         }
-
         return $send_list;
     }
 

@@ -11,10 +11,12 @@ ynewsletter_key = Key
 ynewsletter_subject = Subject
 ynewsletter_email_from = E-Mail-Absender
 ynewsletter_email_from_name = E-Mail-Absender Name
+ynewsletter_email_test = E-Mail zum Testversand
 ynewsletter_article = Article
 ynewsletter_status = Status
 ynewsletter_status_open = offen
 ynewsletter_status_sent = versendet
+ynewsletter_status_test = testen
 
 ynewsletter_msg_pleaseentersubject = Bitte einen Subject eingeben
 ynewsletter_msg_pleaseenteremail = Bitte einen Absender eintragen
