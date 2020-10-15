@@ -61,8 +61,6 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
             $AltBodyUser = rex_var::parse($AltBody, rex_var::ENV_OUTPUT, 'ynewsletter_template', $user);
             $AltBodyUser = rex_file::getOutput(rex_stream::factory('ynewsletter/plain_content', $AltBodyUser));
             $mail->AltBody = self::optimizeTextBody($AltBodyUser);
-            // otherwise message_type would be plain and template code will be sent as message
-            if ('' == $mail->AltBody) { $mail->AltBody = ' '; }
 
             $BodyUser = rex_var::parse($Body, rex_var::ENV_OUTPUT, 'ynewsletter_template', $user);
             $BodyUser = rex_file::getOutput(rex_stream::factory('ynewsletter/plain_content', $BodyUser));
@@ -129,6 +127,8 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
     public static function optimizeTextBody($str)
     {
         $str = str_replace("\r", '', $str);
-        return preg_replace("/[ \n]{2,}/", "\n\n", $str);
+        $str = preg_replace("/[ \n]{2,}/", "\n\n", $str);
+        // otherwise message_type would be plain and template code will be sent as message
+        return '' == $str ? ' ' : $str;
     }
 }
