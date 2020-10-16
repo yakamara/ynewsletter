@@ -31,7 +31,7 @@ ynewsletter_msg_pleaseentertable = Bitte die User-Tabelle eintragen
 
 ynewsletter_msg_newsletternotavailable = Newsletter wurde nicht gefunden
 ynewsletter_msg_newslettersent = Newsletter wurde bereits verschickt
-ynewsletter_msg_emailssent = Newsletter "{1}" wurde erfolgreich verschickt [{0} E-Mails]
+ynewsletter_msg_emailssent = Newsletter "{1}" wurde erfolgreich verschickt [{0} Users]
 
 ynewsletter_groups = Gruppen
 ynewsletter_group = Gruppe
