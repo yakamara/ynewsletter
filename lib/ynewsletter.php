@@ -32,10 +32,11 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
 
         $group = $this->getRelatedDataset('group');
         $article_id = $this->article_id;
+        $clang_id = $this->clang_id;
 
         // TODO: noch contenttyp bauen [article/yform-email-templates] / abstract bauen
 
-        $article = new rex_article_content($article_id);
+        $article = new rex_article_content($article_id, $clang_id);
         $Body = $article->getArticleTemplate();
 
         $AltBody = $article->getArticle();
