@@ -50,7 +50,9 @@ ynewsletter_package_100 = Immer 100 User-Pakete als Intervall verschicken
 ynewsletter_msg_send = Newsletter wird versendet: Empfänger gesamt [{0}] / Bisher versendete E-Mails [{1}] / Bitte warten - Versand läuft, Seite wird sich gleich neu laden.
 ynewsletter_emails = {0} Empfänger
 
-
+ynewsletter_send_delay = Versand-Verzögerung
+ynewsletter_send_package_delay = von {0} Sekunde(n)
+ynewsletter_send_delay_notice = Die Verzögerung bezieht sich auf ein komplettes Paket. Danach greift die Verzögerung und der Reload der Seite startet entsprechend später. Ist im Normalfall nicht nötig.
 ynewsletter_form_sent = Newsletter abschicken
 
 ynewsletter_msg_noopennewsletteravailable = Keine offenen Newsletter (mehr) vorhanden.
