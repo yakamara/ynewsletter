@@ -274,7 +274,7 @@
                 "default": "",
                 "size": "",
                 "only_empty": "",
-                "message": "",
+                "message": "translate:ynewsletter_msg_pleasecreateagroup",
                 "table": "rex_ynewsletter_group",
                 "hashname": "",
                 "password_hash": "",
