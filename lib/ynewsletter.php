@@ -76,14 +76,13 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
             }
 
             // add to log
-            if (2 != $this->status) {
-                $log = rex_ynewsletter_log::create()
-                    ->setValue('user_id', (2 == $this->status) ? '0' : $user['id'])
-                    ->setValue('newsletter', $this->id)
-                    ->setValue('email', $email)
-                    ->setValue('status', $status)
-                    ->save();
-            }
+            $log = rex_ynewsletter_log::create()
+                ->setValue('user_id', (2 == $this->status) ? '0' : $user['id'])
+                ->setValue('newsletter', $this->id)
+                ->setValue('email', $email)
+                ->setValue('status', $status)
+                ->save();
+
             ++$this->ynewsletter_sent_count;
         }
 
