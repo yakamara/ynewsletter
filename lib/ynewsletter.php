@@ -23,7 +23,7 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
         return $this->send($users);
     }
 
-    private function send($users)
+    public function send($users)
     {
         if (0 == count($users)) {
             $this->setValue('status', 1)->save();
@@ -86,8 +86,9 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
         return false;
     }
 
-    public function getUserOffset()
+    public function getUsers()
     {
+        $return = [];
         $groups = $this->getRelatedCollection('group');
 
         // build query
@@ -101,9 +102,15 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
                 $query .= ' where ' . implode(' and ', $filter);
             }
             foreach (rex_sql::factory()->getArray($query) as $q) {
-                $send_list[$q['id']] = $q;
+                $return[$q['id']] = $q;
             }
         }
+        return $return;
+    }
+
+    public function getUserOffset()
+    {
+        $send_list = $this->getUsers();
 
         $this->ynewsletter_user_count = count($send_list);
 
@@ -123,6 +130,19 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
         }
 
         return $send_list;
+    }
+
+    public function deleteUserFromLog(array $user)
+    {
+        $userObject = rex_ynewsletter_log::query()
+            ->where('user_id', $user['id'])
+            ->where('newsletter', $this->getId())
+            ->findOne();
+        if($userObject) {
+            $userObject->delete();
+            return true;
+        }
+        return false;
     }
 
     public static function optimizeTextBody($str)

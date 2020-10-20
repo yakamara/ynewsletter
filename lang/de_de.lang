@@ -52,8 +52,14 @@ ynewsletter_emails = {0} Empfänger
 
 ynewsletter_send_delay = Versand-Verzögerung
 ynewsletter_send_package_delay = von {0} Sekunde(n)
-ynewsletter_send_delay_notice = Die Verzögerung bezieht sich auf ein komplettes Paket. Danach greift die Verzögerung und der Reload der Seite startet entsprechend später. Ist im Normalfall nicht nötig.
-ynewsletter_form_sent = Newsletter abschicken
+ynewsletter_send_delay_notice = Eine Änderungen ist im Normalfall nicht nötig. Die Verzögerung bezieht sich auf ein komplettes Paket. Danach greift die Verzögerung und der Reload der Seite startet entsprechend später.
+ynewsletter_form_send = Newsletter abschicken
+
+ynewsletter_form_send_test = Testversand abschicken
+ynewsletter_send_test = Testversand
+ynewsletter_send_test_id_testuser = ID des Testusers
+ynewsletter_msg_newsletter_user_id_wrong = ID des Testusers wurde in diesem Newsletter nicht gefunden
+ynewsletter_msg_testemailssent = Testnewsletter wurde versendet. Bitte prüfen ob alles entsprechend funktioniert. Newsletter "{1}"
 
 ynewsletter_msg_noopennewsletteravailable = Keine offenen Newsletter (mehr) vorhanden.
 

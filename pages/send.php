@@ -107,7 +107,7 @@ if (0 == count($open_newsletters)) {
 
     $formElements = [];
     $n = [];
-    $n['field'] = '<button class="btn btn-save rex-form-aligned" type="submit" name="export" value="' . rex_i18n::msg('ynewsletter_form_sent') . '">' . rex_i18n::msg('ynewsletter_form_sent') . '</button>';
+    $n['field'] = '<button class="btn btn-save rex-form-aligned" type="submit" name="export" value="' . rex_i18n::msg('ynewsletter_form_send') . '">' . rex_i18n::msg('ynewsletter_form_send') . '</button>';
     $formElements[] = $n;
 
     $fragment = new rex_fragment();

@@ -21,6 +21,8 @@ page:
             title: 'translate:ynewsletter_log'
             subPath: pages/data_edit.php
             yformTable: rex_ynewsletter_log
+        send_test:
+            title: 'translate:ynewsletter_send_test'
         send:
             title: 'translate:ynewsletter_send'
         docs:
