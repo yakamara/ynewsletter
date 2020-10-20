@@ -15,6 +15,7 @@ page:
             yformTable: rex_ynewsletter
         group:
             title: 'translate:ynewsletter_group'
+            perm: admin[]
             subPath: pages/data_edit.php
             yformTable: rex_ynewsletter_group
         log:
