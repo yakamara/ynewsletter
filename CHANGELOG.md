@@ -2,15 +2,17 @@ Changelog
 =========
 
 
-Version 1.4 – xx.10.2019
+Version 1.4 – 01.11.2020
 --------------------------
 
 * Bug: Wenn Artikel keinen Inhalt hatte, wurde der HTML Body zum Textbody (Norbert tyrant88)
 * Versand: Verzögerug ergänzt. Man kann Versand-Pakete mit Verzögerung verschicken.
 * Sprache des Artikel beim Versand nun auswählbar -> auch mehrsprachige Newsletter möglich durch User mit Sprachgruppen und entsprechendem Newsletter (Norbert tyrant88)
 * Testversand nun ohne Umweg möglich - an einen User der Gruppe durch die ID.
+* README ins Backend aufgenommen
+* YNewsletter nicht mehr als Block in der REDAXO Navigation. 
 
-Version 1.3 – 30.09.2019
+Version 1.3 – 30.09.2020
 --------------------------
 
 * Gruppierungfehler behoben
@@ -19,7 +21,7 @@ Version 1.3 – 30.09.2019
 * AltBody wieder auf Artikelcontent beschränkt - keine Template mehr
 * Navigation umgebaut. Kein eigener Block sondern als Reiter.
 
-Version 1.2 – 29.04.2019
+Version 1.2 – 29.04.2020
 --------------------------
 
 * Versandname wurde falsch übernommen, Danke @tyrant88
