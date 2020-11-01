@@ -96,3 +96,27 @@ validate|ynewsletter_auth|%TABLE%|activation_key=activation_key,email=email|stat
 action|db|%TABLE%|main_where
 ```
 
+### Versand über Cronjob
+
+Will man einen Versand über einen Cronjob immer automatisch starten, so kann man folgenden PHP Code verwenden:
+
+`Achtung - Jeder erstellte Newsletter wird dann direkt verschickt`
+
+```
+<?php
+
+$nllog = '';
+$open_newsletters = self::query()->where('status', 0)->orderBy('id', 'desc')->find();
+
+if (0 == count($open_newsletters)) {
+    echo 'keine Newsletter zu verschicken';
+} else {
+    foreach ($open_newsletters as $obj) {
+        $newsletter = self::get($obj->id);
+        $newsletter->sendPackage(500);
+        echo $newsletter->ynewsletter_user_count.'verschickt an '.$newsletter->subject.' [id='.$newsletter->id.']'."\n";
+    }
+}
+
+?>
+```

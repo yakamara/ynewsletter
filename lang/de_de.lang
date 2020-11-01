@@ -72,3 +72,4 @@ ynewsletter_validate_auth_fields = Felder (kommasepariert) angeben, um die gespe
 ynewsletter_validate_auth_description = Anmeldung validieren
 
 ynewsletter_docs_intro = Intro
+ynewsletter_readme = ReadMe

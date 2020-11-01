@@ -26,17 +26,11 @@ page:
             title: 'translate:ynewsletter_send_test'
         send:
             title: 'translate:ynewsletter_send'
-        docs:
-            title: 'Hilfe'
-            perm: admin[]
-            pjax: false
+        readme:
+            title: 'translate:readme'
+            icon: rex-icon fa-info-circle
             itemclass: pull-right
-            subpages:
-                intro:
-                    title: 'translate:ynewsletter_docs_intro'
-                    perm: admin[]
-                    pjax: false
-                    subPath: docs/intro.md
+
 requires:
     packages:
         yform: '^3'
