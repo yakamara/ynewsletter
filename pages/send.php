@@ -3,7 +3,7 @@
 $newsletter_id = rex_request('newsletter_id', 'int', 0);
 $package_size = rex_request('package_size', 'int', 50);
 $ynewsletter_send = rex_request('ynewsletter_send', 'int', 0);
-$send_delay = rex_request('send_delay', 'int', 200);
+$send_delay = rex_request('send_delay', 'int', 10);
 
 if (1 == $ynewsletter_send) {
     if ($newsletter_id > 0) {
@@ -22,7 +22,7 @@ if (1 == $ynewsletter_send) {
 
                 echo '<script>
                     function win_reload(){ window.location.reload(); }
-                    setTimeout("win_reload()", ' . ($send_delay * 100) . '); // Millisekunden 1000 = 1 Sek * 80
+                    setTimeout("win_reload()", ' . ($send_delay * 1000) . '); // Sekunde * 1000 -> Millisekunden
                 </script>';
             }
         }
@@ -87,6 +87,7 @@ if (0 == count($open_newsletters)) {
     $packageSelectDelay->addOption(rex_i18n::msg('ynewsletter_send_package_delay', 0), '0');
     $packageSelectDelay->addOption(rex_i18n::msg('ynewsletter_send_package_delay', '0.5'), '0.5');
     $packageSelectDelay->addOption(rex_i18n::msg('ynewsletter_send_package_delay', 1), '1');
+    $packageSelectDelay->addOption(rex_i18n::msg('ynewsletter_send_package_delay', 10), '10');
     $packageSelectDelay->addOption(rex_i18n::msg('ynewsletter_send_package_delay', 60), '60');
     $packageSelectDelay->addOption(rex_i18n::msg('ynewsletter_send_package_delay', 300), '300');
     $packageSelectDelay->setSelected($send_delay);
