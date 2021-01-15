@@ -18,6 +18,10 @@ page:
             perm: admin[]
             subPath: pages/data_edit.php
             yformTable: rex_ynewsletter_group
+        exclusionlist:
+            title: 'translate:ynewsletter_exclusionlist'
+            subPath: pages/data_edit.php
+            yformTable: rex_ynewsletter_exclusionlist
         log:
             title: 'translate:ynewsletter_log'
             subPath: pages/data_edit.php

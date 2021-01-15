@@ -101,35 +101,20 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
 
     public function getUsers()
     {
-        $return = [];
-        $groups = $this->getRelatedCollection('group');
-
-        // build query
-        foreach ($groups as $group) {
-            $query = 'select * from `'.$group->table.'`';
-            $group_filters = trim($group->filter);
-            if ('' != $group_filters) {
-                foreach (explode("\n", $group_filters) as $group_filter) {
-                    $filter[] = '('.trim($group_filter).')';
-                }
-                $query .= ' where ' . implode(' and ', $filter);
-            }
-            foreach (rex_sql::factory()->getArray($query) as $q) {
-                $return[$q['id']] = $q;
-            }
-        }
-        return $return;
+        return $this->getRelatedDataset('group')->getAllUsers();
     }
 
     public function getUserOffset()
     {
-        $send_list = $this->getUsers();
+        $Users = $this->getUsers();
+        $group = $this->getRelatedDataset('group');
+        $filteredUsers = $group->filterExclusions($Users);
 
-        $this->ynewsletter_user_count = count($send_list);
+        $this->ynewsletter_user_count = count($filteredUsers);
 
         // get users from log
         $log_users = rex_ynewsletter_log::query()
-            ->where('newsletter', $this->id)
+            ->where('newsletter', $this->getId())
             ->find();
 
         $this->ynewsletter_log_count = count($log_users);
@@ -137,12 +122,12 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
         // remove log users from send_list
         $this->ynewsletter_sent_count = $this->ynewsletter_log_count;
         foreach ($log_users as $log_user) {
-            if (isset($send_list[$log_user->user_id])) {
-                unset($send_list[$log_user->user_id]);
+            if (isset($filteredUsers[$log_user->user_id])) {
+                unset($filteredUsers[$log_user->user_id]);
             }
         }
 
-        return $send_list;
+        return $filteredUsers;
     }
 
     public function deleteUserFromLog(array $user)

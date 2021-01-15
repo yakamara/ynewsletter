@@ -4,16 +4,54 @@ class rex_ynewsletter_group extends \rex_yform_manager_dataset
 {
     public function countUsers()
     {
-        $query = 'select count(id) as amount from `'.$this->table.'`';
-        $group_filters = trim($this->filter);
-        if ('' != $group_filters) {
-            foreach (explode("\n", $group_filters) as $group_filter) {
-                $filter[] = '('.trim($group_filter).')';
+        $Users = $this->getAllUsers();
+        $Users = $this->filterExclusions($Users);
+        return count($Users);
+    }
+
+    public function getExclusionsEMails()
+    {
+        $EMails = [];
+        foreach (rex_ynewsletter_exclusionlist::getByGroupId($this->getId()) as $Entry) {
+            $EMails[] = $Entry->getValue('email');
+        }
+        return $EMails;
+    }
+
+    public function getEMailField()
+    {
+        return $this->getValue('email');
+    }
+
+    public function filterExclusions($Users)
+    {
+        $ExclusionEMails = $this->getExclusionsEMails();
+        $Group = $this;
+        $Users = array_filter($Users, static function ($User) use ($ExclusionEMails, $Group) {
+            if (in_array($User[$Group->getEMailField()], $ExclusionEMails, true)) {
+                return false;
             }
-            $query .= ' where ' . implode(' and ', $filter);
+            return true;
+        });
+        return $Users;
+    }
+
+    public function getAllUsers()
+    {
+        $Users = [];
+        $query = 'select * from `'.$this->getValue('table').'`';
+        $filters = trim($this->getValue('filter'));
+        if ('' != $filters) {
+            $queryFilter = [];
+            foreach (explode("\n", $filters) as $filter) {
+                $queryFilter[] = '('.trim($filter).')';
+            }
+            $query .= ' where ' . implode(' and ', $queryFilter);
+        }
+        foreach (rex_sql::factory()->getArray($query) as $q) {
+            $Users[$q['id']] = $q;
         }
 
-        $amounts = rex_sql::factory()->getArray($query);
-        return $amounts[0]['amount'];
+        return $Users;
     }
 }

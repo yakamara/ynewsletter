@@ -31,6 +31,8 @@ ynewsletter_msg_newsletternotavailable = Newsletter wurde nicht gefunden
 ynewsletter_msg_newslettersent = Newsletter wurde bereits verschickt
 ynewsletter_msg_emailssent = Newsletter "{1}" wurde erfolgreich verschickt [{0} E-Mails]
 
+ynewsletter_exclusionlist = Ausschlussliste
+
 ynewsletter_groups = Gruppen
 ynewsletter_group = Gruppe
 ynewsletter_group_name = Name

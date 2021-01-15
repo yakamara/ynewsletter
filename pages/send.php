@@ -49,10 +49,10 @@ if (0 == count($open_newsletters)) {
 
         $group = $newsletter->getRelatedDataset('group');
 
-        $name = '[id='.$newsletter->id.'] '.rex_i18n::msg('ynewsletter_subject').': '.$newsletter->subject . ' | '.rex_i18n::msg('ynewsletter_emails', $group->countUsers()).' | '.rex_i18n::msg('ynewsletter_status').': '.$status_name.'';
-        $newsletterSelect->addOption($name, $newsletter->id);
-        if ($newsletter_id == $newsletter->id) {
-            $newsletterSelect->setSelected($newsletter->id);
+        $name = '[id='.$newsletter->getId().'] '.rex_i18n::msg('ynewsletter_subject').': '.$newsletter->subject . ' | '.rex_i18n::msg('ynewsletter_emails', $group->countUsers()).' | '.rex_i18n::msg('ynewsletter_status').': '.$status_name.'';
+        $newsletterSelect->addOption($name, $newsletter->getId());
+        if ($newsletter_id == $newsletter->getId()) {
+            $newsletterSelect->setSelected($newsletter->getId());
         }
     }
 

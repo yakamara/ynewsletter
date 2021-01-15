@@ -7,20 +7,11 @@ $ynewsletter_send_to_id = rex_request('ynewsletter_send_to_id', 'int', 0);
 if (1 == $ynewsletter_send) {
     if ($newsletter_id > 0) {
         $newsletter = rex_ynewsletter::get($newsletter_id);
-
-        // send($users)
-
         if (!$newsletter) {
             echo rex_view::error(rex_i18n::translate('translate:ynewsletter_msg_newsletternotavailable'));
         } elseif (1 == $newsletter->status) {
             echo rex_view::warning(rex_i18n::translate('translate:ynewsletter_msg_newslettersent'));
         } else {
-            // log der id in dem Newsletter löschen
-
-            // versenden
-
-            // log der id in dem Newsletter löschen
-
             $users = $newsletter->getUsers();
             if (!isset($users[$ynewsletter_send_to_id])) {
                 echo rex_view::warning(rex_i18n::translate('translate:ynewsletter_msg_newsletter_user_id_wrong'));
