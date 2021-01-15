@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Version 1.5 – xx.01.2021
+--------------------------
+
+* Ausschlussliste ergänzt. Man kann nun User aus dem Newsletter einer Gruppe ausschliessen. Z.B. weil sie sich abgemeldet haben
+* Attachments können nun an einen Newsletter gehängt werden
 
 Version 1.4 – 01.11.2020
 --------------------------
