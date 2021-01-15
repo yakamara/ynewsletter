@@ -45,10 +45,24 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
 
         $Subject = $this->subject;
 
+        $mediaList = [];
+        if ('' != $this->getValue('attachments')) {
+            foreach (explode(',', $this->getValue('attachments')) as $mediaFilename) {
+                $media = rex_media::get($mediaFilename);
+                if ($media) {
+                    $mediaList[] = $media;
+                }
+            }
+        }
+
         foreach ($users as $user) {
             $email = $user[$group->email];
 
             $mail = new rex_mailer();
+            foreach ($mediaList as $media) {
+                $mail->addAttachment(rex_url::media($media->getFileName()), $media->getOriginalFileName());
+            }
+
             $mail->AddAddress($email);
             // TODO: AddAddressName
             $mail->From = $this->email_from;
@@ -58,7 +72,6 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
             $SubjectUser = rex_file::getOutput(rex_stream::factory('ynewsletter/plain_content', $SubjectUser));
             $mail->Subject = $SubjectUser;
 
-            // TODO: $mail->AddAttachment($attachment, $name);
             $AltBodyUser = rex_var::parse($AltBody, rex_var::ENV_OUTPUT, 'ynewsletter_template', $user);
             $AltBodyUser = rex_file::getOutput(rex_stream::factory('ynewsletter/plain_content', $AltBodyUser));
             $mail->AltBody = self::optimizeTextBody($AltBodyUser);
@@ -138,7 +151,7 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
             ->where('user_id', $user['id'])
             ->where('newsletter', $this->getId())
             ->findOne();
-        if($userObject) {
+        if ($userObject) {
             $userObject->delete();
             return true;
         }

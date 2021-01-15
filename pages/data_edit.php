@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 $target_page = rex_request('page', 'string');
 
 if ('yform/manager/data_edit' == $target_page) {
@@ -40,17 +41,11 @@ if ($table && rex::getUser() && (rex::getUser()->isAdmin() || rex::getUser()->ge
             ob_start();
             echo $page->getDataPage();
             $page = ob_get_clean();
-            // Such den Header - Fall 1: mit Suchspalte?
-            $p = strpos($page, '</header>'.PHP_EOL.'<div class="row">');
-            // Such den Header - Fall 2: ohne Suchspalte
-            if (false === $p) {
-                $p = strpos($page, '</header>'.PHP_EOL.'<section class="rex-page-section">');
-            }
-            // Header rauswerfen
-            if (false !== $p) {
-                $page = substr($page, $p);
-            }
-            // ausgabe
+
+            $page = preg_replace('/<header(.*)<\/header>'.PHP_EOL.'<div class="row">/is', '$2<div class="row">', $page);
+            $page = preg_replace('/<header(.*)<\/header>'.PHP_EOL.'<div class="alert/is', '$2<div class="alert', $page);
+            $page = preg_replace('/<header(.*)<\/header>'.PHP_EOL.'<section class="rex-page-section">/is', '$2<section class="rex-page-section">', $page);
+
             echo $page;
         }
 
