@@ -10,11 +10,49 @@
 * Einen Newsletter definieren, indem man Subject, Absendeadresse, Artikel und Versandgruppe bestimmt
 * Über Versand den entsprechenden Newsletter im Intervall oder als Paket verschicken
 
-
 ### Rechte
 
 * Da die Tabellen über die YForm verwaltet werden, muss man hierrüber an die User Tabellenrechte geben.
 * Nur ein Admin kann die Gruppen anlegen
+
+
+### Ausschlussliste
+
+* Diese Liste kann mit E-Mails befüllt werden, welche beim Versand explicit ausgenommen werden
+* Wenn ein User keiner Versandgruppe zugordnet ist, wird der Versand an diese E-Mail immer unterbunden.
+
+
+### Integrierte Abmeldung (Eintrag in die Ausschlussliste)
+
+Die Ausschlussliste ermöglich ein Abmelden eines Empfänger ohne in der Originaltabelle Eintragungen zu machen. Dabei wird über REX_VARs ein Abmeldenlink erstellt und die ArtikelID angegeben, welchen nach der Abmeldung aufgerufen wird. ("Danke" für die Abmeldung).
+
+Folgender REX_VAR wird dafür verwenden, welcher einfach in das Newsletter Template oder Modul eingesetzt wird
+
+#### Beispiel 1
+```
+REX_YNEWSLETTER_UNSUBSCRIBE[groups="" redirectToID=3 output=url]
+``` 
+Es wird ein individueller Link erstellt welcher für Abmeldung des aktuellen Users sorge und auf die ArtikelID 3 verweist. Es wird ausschliesslich die URL ausgegeben.
+
+
+#### Beispiel 2
+
+```
+REX_YNEWSLETTER_UNSUBSCRIBE[groups=1,3,2 redirectToID=4 output=html]
+``` 
+
+Es wird der komplette A Tag erstellt mit dem Link, welcher den User aus den Gruppen 1,2 und 3 abmelden und anschliessend auf den Artikel mit der ID weiterleitet.  
+
+
+#### Beispiel 3 (normalerweise diesen hier nutzen)
+
+```
+REX_YNEWSLETTER_UNSUBSCRIBE[redirectToID=3 output=url]
+``` 
+Es wird ein Abmeldelink erstellt mit dem aktuellen User und der aktuellen Gruppe.
+
+Sofern der Newsletter im Browser aufgerufen wird, verschwinden die REX_VARS.
+
 
 ### Platzhalter für die Verwendung in Templates, Modulen, Subject etc.
 
@@ -23,6 +61,12 @@ Hier ein Beispiel für die Verwendung von Ansprachen. Bitte beachten, dass bei M
 REX_YNEWSLETTER_DATA[field="name" prefix="Sehr geehrte/r Herr/Frau "]
 REX_YNEWSLETTER_DATA[field="name" ifempty="Sehr geehrte Damen und Herren"]
 ```
+
+
+
+
+
+
 
 ### Anmeldung erstellen
 

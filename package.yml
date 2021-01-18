@@ -1,5 +1,5 @@
 package: ynewsletter
-version: '1.4'
+version: '1.5b1'
 author: Jan Kristinus
 supportpage: www.github.org/yakamara/redaxo_ynewsletter
 
@@ -38,5 +38,6 @@ page:
 requires:
     packages:
         yform: '^3'
+        yrewrite: '^2'
     redaxo: '^5.7'
 

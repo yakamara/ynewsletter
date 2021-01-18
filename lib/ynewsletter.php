@@ -30,7 +30,8 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
             return true;
         }
 
-        $group = $this->getRelatedDataset('group');
+        /** @var rex_ynewsletter_group $UserGroup */
+        $UserGroup = $this->getRelatedDataset('group');
         $article_id = $this->article_id;
         $clang_id = $this->clang_id;
 
@@ -56,7 +57,7 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
         }
 
         foreach ($users as $user) {
-            $email = $user[$group->email];
+            $email = $user[$UserGroup->getEMailField()];
 
             $mail = new rex_mailer();
             foreach ($mediaList as $media) {
@@ -68,15 +69,15 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
             $mail->From = $this->email_from;
             $mail->FromName = $this->email_from_name;
 
-            $SubjectUser = rex_var::parse($Subject, rex_var::ENV_OUTPUT, 'ynewsletter_template', $user);
+            $SubjectUser = rex_var::parse($Subject, rex_var::ENV_OUTPUT, 'ynewsletter_template', ['user' => $user, 'group' => $UserGroup]);
             $SubjectUser = rex_file::getOutput(rex_stream::factory('ynewsletter/plain_content', $SubjectUser));
             $mail->Subject = $SubjectUser;
 
-            $AltBodyUser = rex_var::parse($AltBody, rex_var::ENV_OUTPUT, 'ynewsletter_template', $user);
+            $AltBodyUser = rex_var::parse($AltBody, rex_var::ENV_OUTPUT, 'ynewsletter_template', ['user' => $user, 'group' => $UserGroup]);
             $AltBodyUser = rex_file::getOutput(rex_stream::factory('ynewsletter/plain_content', $AltBodyUser));
             $mail->AltBody = self::optimizeTextBody($AltBodyUser);
 
-            $BodyUser = rex_var::parse($Body, rex_var::ENV_OUTPUT, 'ynewsletter_template', $user);
+            $BodyUser = rex_var::parse($Body, rex_var::ENV_OUTPUT, 'ynewsletter_template', ['user' => $user, 'group' => $UserGroup]);
             $BodyUser = rex_file::getOutput(rex_stream::factory('ynewsletter/plain_content', $BodyUser));
             $mail->Body = $BodyUser;
 
@@ -149,5 +150,29 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
         $str = preg_replace("/[ \n]{2,}/", "\n\n", $str);
         // otherwise message_type would be plain and template code will be sent as message
         return '' == $str ? ' ' : $str;
+    }
+
+    public static function getEncryptionKey()
+    {
+        $encryption_key = rex_config::get('ynewsletter', 'encryption_key');
+        if (!$encryption_key || '' == $encryption_key) {
+            $encryption_key = bin2hex(random_bytes(64));
+            rex_config::set('ynewsletter', 'encryption_key', $encryption_key);
+        }
+        return $encryption_key;
+    }
+
+    public static function encrypt($value)
+    {
+        $string = serialize($value);
+        $encrypted_string = openssl_encrypt($string, 'AES-128-ECB', self::getEncryptionKey());
+        return $encrypted_string;
+    }
+
+    public static function decryptString($string)
+    {
+        $decrypted_string = openssl_decrypt($string, 'AES-128-ECB', self::getEncryptionKey());
+        $value = unserialize($decrypted_string);
+        return $value;
     }
 }
