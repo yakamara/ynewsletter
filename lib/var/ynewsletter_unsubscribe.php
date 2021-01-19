@@ -8,7 +8,7 @@ class rex_var_ynewsletter_unsubscribe extends rex_var
     protected function getOutput()
     {
         if (!in_array($this->getContext(), ['ynewsletter_template'])) {
-            return self::quote('');
+            return false;
         }
 
         $ContextData = $this->getContextData();
@@ -17,7 +17,7 @@ class rex_var_ynewsletter_unsubscribe extends rex_var
         /** @var rex_ynewsletter_group $UserGroup */
         $UserGroup = $ContextData['group'];
 
-        $redirectToID = $this->getArg('redirectToID') ?? null;
+        $redirectToID = $this->getArg('redirectToID') ?? rex_yrewrite::getCurrentDomain()->getStartId();
 
         if (!$redirectToID) {
             return self::quote('redirectToID attribute is missing');

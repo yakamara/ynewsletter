@@ -9,7 +9,7 @@ class rex_var_ynewsletter_data extends rex_var
     {
         $field = $this->getArg('field', 0, true);
         if (!in_array($this->getContext(), ['ynewsletter_template'])) { // || !is_numeric($id) || $id < 1 || $id > 20
-            return self::quote('');
+            return false;
         }
 
         $ContextData = $this->getContextData();
