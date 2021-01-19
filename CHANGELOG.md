@@ -1,13 +1,12 @@
 Changelog
 =========
 
-Version 1.5 – xx.01.2021
+Version 1.5 – 19.01.2021
 --------------------------
 
 * Ausschlussliste ergänzt. Man kann nun User aus dem Newsletter einer Gruppe ausschliessen. Z.B. weil sie sich abgemeldet haben
 * Abmeldesystem integriert. Durch REX_YNEWSLETTER_UNSUBSCRIBE[redirectToID=3 output=url].  
 * Attachments können nun an einen Newsletter gehängt werden
-* REX_VARS werden bei Browseraufruf mit leeren Inhalten ersetzt.
 
 Version 1.4 – 01.11.2020
 --------------------------
