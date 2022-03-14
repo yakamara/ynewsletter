@@ -37,7 +37,6 @@ page:
 
 requires:
     packages:
-        yform: '^3'
         yrewrite: '^2'
     redaxo: '^5.7'
 
