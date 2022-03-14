@@ -1,7 +1,7 @@
 package: ynewsletter
 version: '1.5'
 author: Jan Kristinus
-supportpage: www.github.org/yakamara/redaxo_ynewsletter
+supportpage: www.github.com/yakamara/redaxo_ynewsletter
 
 page:
     title: 'translate:ynewsletter'
