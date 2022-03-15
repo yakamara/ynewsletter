@@ -49,12 +49,12 @@ class rex_yform_validate_ynewsletter_auth extends rex_yform_validate_abstract
         }
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'ynewsletter_auth -> Beispiel: validate|ynewsletter_auth|table|label1=request1,label2=request2|status=0|warning_message|Fields for E-Mail-Template';
     }
 
-    public function getDefinitions()
+    public function getDefinitions(): array
     {
         return [
             'type' => 'validate',
