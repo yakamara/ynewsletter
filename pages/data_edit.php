@@ -24,7 +24,7 @@ if ('yform/manager/data_edit' == $target_page) {
 
 $table = rex_yform_manager_table::get($table_name);
 
-if ($table && rex::getUser() && (rex::getUser()->isAdmin() || rex::getUser()->getComplexPerm('yform_manager_table')->hasPerm($table->getTableName()))) {
+if ($table && rex::getUser() && (rex::getUser()->isAdmin() || rex_yform_manager_table_authorization::onAttribute('EDIT', $table, rex::getUser()))) {
     try {
         $page = new rex_yform_manager();
         $page->setTable($table);
