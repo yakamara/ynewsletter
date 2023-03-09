@@ -52,8 +52,7 @@ Block `YForm Formbuilder` hinzufügen. In der Eingabemaske folgenden Code einfü
 ```
 hidden|status|1
 hidden|newsletter|1
-objparams|submit_btn_show|0
-objparams|send|1
+objparams|send|0
 objparams|csrf_protection|0
 
 validate|ynewsletter_auth|%TABLE%|activation_key=activation_key,email=email|status=0|{{ form.newsletter.error.confirmation.validate }}|
