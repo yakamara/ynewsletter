@@ -13,7 +13,7 @@ class rex_ynewsletter_group extends \rex_yform_manager_dataset
     {
         $EMails = [];
         foreach (rex_ynewsletter_exclusionlist::getByGroupId($this->getId()) as $Entry) {
-            $EMails[] = $Entry->getValue('email');
+            $EMails[] = mb_strtolower($Entry->getValue('email'));
         }
         return $EMails;
     }
@@ -28,7 +28,7 @@ class rex_ynewsletter_group extends \rex_yform_manager_dataset
         $ExclusionEMails = $this->getExclusionsEMails();
         $Group = $this;
         $Users = array_filter($Users, static function ($User) use ($ExclusionEMails, $Group) {
-            if (in_array($User[$Group->getEMailField()], $ExclusionEMails, true)) {
+            if (in_array(mb_strtolower($User[$Group->getEMailField()]), $ExclusionEMails, true)) {
                 return false;
             }
             return true;
