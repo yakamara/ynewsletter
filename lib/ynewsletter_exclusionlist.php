@@ -47,7 +47,9 @@ class rex_ynewsletter_exclusionlist extends \rex_yform_manager_dataset
 
         $UserInfoString = rex_request(self::$unsubscribeKey, 'string');
         $UserInfo = rex_ynewsletter::decryptString($UserInfoString);
-        self::excludeEMail($UserInfo['email'], $UserInfo['groups']);
-        rex_response::sendRedirect(rex_getUrl($UserInfo['redirectToID'], '', [], '&'));
+        if (is_array($UserInfo)) {
+            self::excludeEMail($UserInfo['email'], $UserInfo['groups']);
+            rex_response::sendRedirect(rex_getUrl($UserInfo['redirectToID'], '', [], '&'));
+        }
     }
 }
