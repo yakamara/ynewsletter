@@ -75,3 +75,6 @@ ynewsletter_validate_auth_description = Anmeldung validieren
 
 ynewsletter_docs_intro = Intro
 ynewsletter_readme = ReadMe
+
+ynewsletter_choice_newsletter = Bitte einen Newsletter auswählen
+ynewsletter_msg_newsletter_not_selected = Es wurde kein Newsletter ausgewählt.

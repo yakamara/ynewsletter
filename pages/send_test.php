@@ -5,6 +5,9 @@ $ynewsletter_send = rex_request('ynewsletter_send', 'int', 0);
 $ynewsletter_send_to_id = rex_request('ynewsletter_send_to_id', 'int', 0);
 
 if (1 == $ynewsletter_send) {
+    if (0 === $newsletter_id) {
+        echo rex_view::error(rex_i18n::translate('translate:ynewsletter_msg_newsletter_not_selected'));
+    }
     if ($newsletter_id > 0) {
         $newsletter = rex_ynewsletter::get($newsletter_id);
         if (!$newsletter) {
@@ -40,6 +43,7 @@ if (0 == count($open_newsletters)) {
     $newsletterSelect->setId('rex-ynewsletter-newsletter');
     $newsletterSelect->setName('newsletter_id');
     $newsletterSelect->setAttribute('class', 'form-control');
+    $newsletterSelect->addOption(rex_i18n::msg('ynewsletter_choice_newsletter'), 0);
     foreach ($open_newsletters as $newsletter) {
         if (1 == $newsletter->status) {
             $status_name = rex_i18n::translate('translate:ynewsletter_status_sent');

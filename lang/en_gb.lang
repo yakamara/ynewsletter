@@ -1,1 +1,4 @@
 ynewsletter = YNewsletter
+
+ynewsletter_choice_newsletter = Please select a newsletter
+ynewsletter_msg_newsletter_not_selected = No newsletter was selected.
