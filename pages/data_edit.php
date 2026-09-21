@@ -65,3 +65,17 @@ if ($table && rex::getUser() && (rex::getUser()->isAdmin() || rex_yform_manager_
     // Tabelle vorhanden, aber dem User fehlt das YForm-Tabellenrecht: Hinweis statt leerer Seite (#48)
     echo rex_view::warning(rex_i18n::msg('ynewsletter_msg_no_table_permission', $table->getTableName()));
 }
+
+// YForm speichert ein leeres datetime-Feld als 0000-00-00 00:00:00 und zeigt das im Textfeld an;
+// der Datumspicker kann damit nichts anfangen (NaN). Nullwerte im Formular leeren, damit der
+// Picker beim heutigen Datum startet. Ein leer abgeschicktes Feld speichert YForm wieder als Nullwert.
+?>
+<script>
+(function () {
+    document.querySelectorAll('input[data-yform-tools-datetimepicker], input[data-yform-tools-datepicker]').forEach(function (input) {
+        if (/^0000-00-00/.test(input.value)) {
+            input.value = '';
+        }
+    });
+})();
+</script>

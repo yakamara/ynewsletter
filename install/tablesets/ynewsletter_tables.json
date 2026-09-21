@@ -1616,7 +1616,7 @@
                 "format": "Y-m-d H:i:s",
                 "current_date": "",
                 "widget": "input:text",
-                "attributes": "",
+                "attributes": "{\"data-yform-tools-datetimepicker\":\"YYYY-MM-DD HH:ii:ss\"}",
                 "query": "",
                 "category": "",
                 "year_start": "",

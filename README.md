@@ -126,7 +126,7 @@ Nun kann unter YNewsletter > Testversand oder unter YNewsletter > Versand ein Te
 
 ### (Optional) 10. Versandtermin und automatischer Versand
 
-Im Newsletter kann ein **Versandtermin** (Datum und Uhrzeit) eingetragen werden. Ein Newsletter mit Termin wird ab diesem Zeitpunkt automatisch verschickt und ist auf der Versandseite gesperrt; er erscheint dort in der Liste „Geplante und laufende Versände". Ohne Termin bleibt es beim manuellen Versand über die Versandseite.
+Im Newsletter kann ein **Versandtermin** (Datum und Uhrzeit, mit Auswahlhilfe) eingetragen werden. Ein Newsletter mit Termin wird ab diesem Zeitpunkt automatisch verschickt und ist auf der Versandseite gesperrt; er erscheint dort in der Liste „Geplante und laufende Versände". Ohne Termin bleibt es beim manuellen Versand über die Versandseite.
 
 Für den automatischen Versand gibt es zwei Wege, die dieselbe Logik nutzen:
 

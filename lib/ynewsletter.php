@@ -83,13 +83,13 @@ class rex_ynewsletter extends rex_yform_manager_dataset
         $messages = [];
         $due = self::getDue();
         if (0 === count($due)) {
-            $messages[] = rex_i18n::msg('ynewsletter_console_nothing_due');
+            $messages[] = rex_i18n::rawMsg('ynewsletter_console_nothing_due');
             return $messages;
         }
 
         foreach ($due as $newsletter) {
             if (!$newsletter->acquireSendLock()) {
-                $messages[] = rex_i18n::msg('ynewsletter_console_locked', $newsletter->getId(), (string) $newsletter->getSendingStartedAt());
+                $messages[] = rex_i18n::rawMsg('ynewsletter_console_locked', $newsletter->getId(), (string) $newsletter->getSendingStartedAt());
                 continue;
             }
 
@@ -99,13 +99,13 @@ class rex_ynewsletter extends rex_yform_manager_dataset
                 $newsletter->releaseSendLock();
             }
 
-            $messages[] = rex_i18n::msg(
+            $messages[] = rex_i18n::rawMsg(
                 'ynewsletter_console_sent',
                 $newsletter->getId(),
                 (string) $newsletter->getValue('subject'),
                 (int) $newsletter->ynewsletter_sent_count,
                 (int) $newsletter->ynewsletter_user_count,
-                rex_i18n::msg(1 == $newsletter->getValue('status') ? 'ynewsletter_status_sent' : 'ynewsletter_status_open'),
+                rex_i18n::rawMsg(1 == $newsletter->getValue('status') ? 'ynewsletter_status_sent' : 'ynewsletter_status_open'),
             );
         }
 

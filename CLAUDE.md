@@ -59,6 +59,11 @@ Details: `.claude/references/01-versand-pipeline.md`, `02-datenmodell-und-instal
   Alles darin muss idempotent bleiben.
 - **Leere YForm-datetime-Werte sind `0000-00-00 00:00:00`**, nicht NULL. `readDatetime()` in
   `rex_ynewsletter` behandelt beides als „nicht gesetzt"; SQL-Filter brauchen `NOT LIKE "0000-00-00%"`.
+  Im Formular leert `pages/data_edit.php` solche Werte per JavaScript, sonst startet der YForm-
+  Datumspicker mit NaN. Der Picker selbst ist nur das Feld-Attribut
+  `data-yform-tools-datetimepicker="YYYY-MM-DD HH:ii:ss"` im Tableset (YForm `tools.js`).
+- **Konsolen- und Cronjob-Meldungen mit `rex_i18n::rawMsg()`** bauen; `msg()` escaped die
+  Argumente, und Betreffzeilen erscheinen sonst mit `&quot;` im Terminal und im Cronjob-Log.
 - **`rex_sql::getRows()` nach UPDATE zählt nur geänderte Zeilen.** Ein UPDATE auf denselben Wert
   meldet 0. Die Sperre in `acquireSendLock()` verlässt sich deshalb auf die WHERE-Bedingung,
   nicht auf die Zeilenzahl allein; Tests übergeben einen abweichenden Zeitstempel.
