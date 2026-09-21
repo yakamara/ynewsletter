@@ -68,8 +68,8 @@ if (0 == count($open_newsletters)) {
     $formElements[] = $n;
 
     $n = [];
-    $n['label'] = '<label for="rex-js-ynewsletter-send_test_id_testuser">' . rex_i18n::msg('ynewsletter_send_test_id_testuser') . '</label>';
-    $n['field'] = '<input class="form-control" id="rex-ynewsletter-newsletter-" type="test" name="ynewsletter_send_to_id"  value="' . $ynewsletter_send_to_id . '" />';
+    $n['label'] = '<label for="rex-ynewsletter-send-to-id">' . rex_i18n::msg('ynewsletter_send_test_id_testuser') . '</label>';
+    $n['field'] = '<input class="form-control" id="rex-ynewsletter-send-to-id" type="number" min="1" name="ynewsletter_send_to_id" value="' . $ynewsletter_send_to_id . '" />';
     $formElements[] = $n;
 
     $fragment = new rex_fragment();
