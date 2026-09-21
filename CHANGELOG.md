@@ -4,6 +4,7 @@ Changelog
 Unveröffentlicht
 ----------------
 
+* Versandplanung: Feld „Versandtermin" im Newsletter, Konsolenbefehl `ynewsletter:send` und Cronjob-Typ „YNewsletter: geplante Newsletter versenden"; terminierte Newsletter sind auf der Versandseite gesperrt, laufende Versände werden dort mit Fortschritt angezeigt und eine hängende Sperre lässt sich aufheben (#37)
 * Neue Extension Points `YNEWSLETTER_MAIL_BEFORE_SEND` und `YNEWSLETTER_MAIL_SENT` (#39)
 * Preheader-Feld im Newsletter; wird unsichtbar nach dem `<body>`-Tag eingefügt (#41)
 * Sprog-Platzhalter werden beim Versand in Betreff, Preheader, HTML- und Textfassung ersetzt (#38, #58)

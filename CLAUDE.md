@@ -38,7 +38,10 @@ Einstieg für die Arbeit **am AddOn selbst**. Fachliche Bedienung steht in `READ
   `rex_ynewsletter::isSending()` true. Zwei EPs: `YNEWSLETTER_MAIL_BEFORE_SEND` (Subject
   `rex_mailer`) und `YNEWSLETTER_MAIL_SENT`. Jede Mail landet im Log.
 - **Paketversand im Backend** ist ein GET-Formular plus JavaScript-Reload nach `send_delay` Sekunden.
-  Es gibt keinen serverseitigen Scheduler; der Cronjob-Weg ist ein Snippet in der README.
+- **Versandplanung**: `send_at` (YForm-Feld) macht einen Newsletter zum Konsolen-/Cronjob-Fall,
+  `sending_started_at` (reine SQL-Spalte, kein YForm-Feld) ist die Versandsperre. Konsole
+  `ynewsletter:send` und Cronjob-Typ rufen beide `rex_ynewsletter::sendDue()`. Die Versandseite
+  filtert terminierte und gesperrte Newsletter aus dem Dropdown und bietet „Sperre aufheben".
 - **Abmeldung**: `REX_YNEWSLETTER_UNSUBSCRIBE` baut eine URL mit AES-verschlüsseltem Payload
   (E-Mail, Gruppen, Redirect-Artikel). `initExclude()` läuft auf `PACKAGES_INCLUDED`, schreibt in die
   Ausschlussliste und leitet weiter.
@@ -50,8 +53,15 @@ Details: `.claude/references/01-versand-pipeline.md`, `02-datenmodell-und-instal
 
 - **Schema nur über das Tableset-JSON ändern**, nie per SQL oder im YForm-Backend der Instanz.
   `update.php` ist ein `require` von `install.php`; die löscht alle `select`-Felder der
-  `rex_ynewsletter%`-Tabellen (YForm-3-Altlast) und importiert das Tableset neu. Alles darin muss
-  also idempotent bleiben.
+  `rex_ynewsletter%`-Tabellen (YForm-3-Altlast), importiert das Tableset neu und sichert danach
+  per `rex_sql_table` die Spalten ab, die bei Updates fehlen können. YForm-Spalten dort nur
+  `if (!hasColumn())` anlegen, sonst streiten sich Import und `ensureColumn` um den Spaltentyp.
+  Alles darin muss idempotent bleiben.
+- **Leere YForm-datetime-Werte sind `0000-00-00 00:00:00`**, nicht NULL. `readDatetime()` in
+  `rex_ynewsletter` behandelt beides als „nicht gesetzt"; SQL-Filter brauchen `NOT LIKE "0000-00-00%"`.
+- **`rex_sql::getRows()` nach UPDATE zählt nur geänderte Zeilen.** Ein UPDATE auf denselben Wert
+  meldet 0. Die Sperre in `acquireSendLock()` verlässt sich deshalb auf die WHERE-Bedingung,
+  nicht auf die Zeilenzahl allein; Tests übergeben einen abweichenden Zeitstempel.
 - **`send()` gibt invertiert zurück**: `true` heißt „nichts mehr zu tun, Status auf versendet
   gesetzt", `false` heißt „Paket wurde verschickt, es kommen noch weitere". `pages/send.php`
   nennt das `$ready`.

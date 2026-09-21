@@ -8,7 +8,8 @@ Alles in `lib/ynewsletter.php` (`rex_ynewsletter`) und `lib/ynewsletter_group.ph
 |---|---|---|
 | `pages/send.php` | `sendPackage($package_size)` | `0` = alles auf einmal (`sendAll()`) |
 | `pages/send_test.php` | `send([$id => $row])` + `deleteUserFromLog($row)` | ein User, danach Log-Eintrag wieder entfernt |
-| README-Cronjob | `sendPackage(500)` in Schleife über `status = 0` | kein Code im AddOn, nur Doku |
+| `lib/command/send.php` (`ynewsletter:send`) | `rex_ynewsletter::sendDue()` | Konsole, für System-Cron |
+| `lib/cronjob/send.php` | `rex_ynewsletter::sendDue()` | Cronjob-Typ, registriert in `boot.php` wenn cronjob verfügbar |
 
 ## Ablauf `sendPackage()`
 
@@ -44,6 +45,26 @@ sendPackage(size)
      └─ finally: $currentSending = null, vorherige clang_id wiederherstellen
      return false                                          ← „Paket raus, weiter reloaden"
 ```
+
+## Versandplanung (`send_at`, `sending_started_at`)
+
+```
+sendDue(packageSize, delay)
+ ├─ getDue(): status = 0, send_at gesetzt (nicht 0000-00-00), send_at <= jetzt (PHP-Zeit)
+ └─ je Newsletter
+      ├─ acquireSendLock(): UPDATE … SET sending_started_at = :now WHERE id = :id AND Sperre leer
+      │    0 Zeilen → übersprungen („läuft bereits seit …")
+      ├─ try sendComplete(): sendPackage() bis true, optional sleep zwischen Paketen
+      └─ finally releaseSendLock(): sending_started_at = NULL
+```
+
+- `sendPackage()` wirft `rex_exception`, wenn ein Termin gesetzt und nicht erreicht ist. `send()`
+  selbst prüft das nicht, damit der Testversand für terminierte Newsletter möglich bleibt.
+- Die Versandseite zeigt terminierte und gesperrte offene Newsletter in einer Tabelle mit
+  Fortschritt (`getUserOffset()` füllt die Zähler) und bietet „Sperre aufheben" (CSRF-geschützt,
+  `func=unlock`). Manuell versendbar sind nur Newsletter ohne Termin und ohne Sperre.
+- Bricht ein Konsolenlauf hart ab, bleibt die Sperre stehen. Nach dem Aufheben setzt der nächste
+  Lauf fort, das Log kennt die schon versorgten Empfänger.
 
 ## Was daraus folgt
 

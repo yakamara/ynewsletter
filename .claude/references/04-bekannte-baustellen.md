@@ -16,7 +16,7 @@ referenzieren.
 ## Mit 1.6 erledigt (Issue nach Release schließen)
 
 #34 hidden-Flag, #38 Sprog beim Versand, #39 Extension Points, #41 Preheader, #44 `isSending()`,
-#48 Rechte-Hinweis, #58 Sprache beim Versand, #32 `redirectTo`. #49 und #55 waren im Code seit
+#48 Rechte-Hinweis, #58 Sprache beim Versand, #32 `redirectTo`, #37 Versandplanung. #49 und #55 waren im Code seit
 2022 gefixt und brauchen nur das Release. #45 (README) und #53 (DSGVO-Frage) sind beantwortet.
 
 ## Offene Issues, geclustert
@@ -25,7 +25,6 @@ referenzieren.
 - #57 Versendete Newsletter nicht erneut nutzbar (Status/Log zurücksetzen fehlt); Vorschlag:
   Hinweis mit Logzahl auf der Versandseite plus Button „Log leeren und erneut versenden"
 - #59 User in mehreren Gruppen bekommt Mehrfachzustellung oder wird nicht gefunden; Rückfrage nötig
-- #37 Versandplaner / zeitgesteuerter Versand
 - #36 Mailjet-Anbindung (Bounces in die Ausschlussliste); über `YNEWSLETTER_MAIL_BEFORE_SEND`
   projektseitig machbar
 - #33 „Tabelle wurde nicht gefunden" nach Update 1.4 → 1.5; seit `update.php` vermutlich erledigt,

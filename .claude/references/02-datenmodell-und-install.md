@@ -13,6 +13,8 @@
 | group | be_manager_relation → `rex_ynewsletter_group.name` | Empfängergruppe |
 | clang_id | choice `SELECT id,name FROM rex_clang` | Sprache für Artikel-Rendering |
 | attachments | be_media (multiple) | kommagetrennte Mediapool-Dateinamen |
+| send_at | datetime (widget input:text) | Versandtermin; leer = `0000-00-00 00:00:00` = manueller Versand |
+| sending_started_at | **keine YForm-Spalte**, datetime NULL | Versandsperre, nur per `rex_sql_table` in `install.php` angelegt |
 
 Validierungen: `empty` auf subject, article_id, email_from, group; `email` auf email_from.
 
@@ -65,8 +67,10 @@ require __DIR__ . '/install.php';
 
 - Der DELETE räumt Felder aus der YForm-3-Zeit weg, die durch `choice` ersetzt wurden. Er bleibt,
   bis niemand mehr von < 1.5.1 aktualisiert.
+- Nach dem Import sichert `install.php` per `rex_sql_table` die Spalten `preheader`, `send_at`
+  (nur wenn fehlend) und `sending_started_at` (immer) ab, danach `rex_yform_manager_table::deleteCache()`.
 - `importTablesets()` legt Tabellen und Felder an bzw. gleicht sie ab. Spalten, die im JSON fehlen,
-  werden nicht gelöscht. Eine Umbenennung braucht also eigene Migration (Daten kopieren, alte
+  werden nicht gelöscht (`generateTableAndFields()` läuft ohne `delete_old`). Eine Umbenennung braucht also eigene Migration (Daten kopieren, alte
   Spalte per `rex_sql_table` entfernen), sonst bleibt die Altspalte stehen.
 - Es gibt keine `uninstall.php`; die Tabellen bleiben bei Deinstallation erhalten. Das ist bei
   Newsletter-Logs vermutlich gewollt, sollte aber bei einem `uninstall.php` bewusst entschieden

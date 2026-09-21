@@ -123,31 +123,32 @@ Nun kann unter YNewsletter > Testversand oder unter YNewsletter > Versand ein Te
 ***
 
 
-### (Optional) 10. Versand über Cronjob
-Will man einen Versand über einen Cronjob automatisch starten, so kann man folgenden PHP Code in einem Cronjob vom Typ „PHP-Code" verwenden:
+### (Optional) 10. Versandtermin und automatischer Versand
 
-`Achtung - Jeder Newsletter mit Status „offen" wird dann direkt verschickt`
+Im Newsletter kann ein **Versandtermin** (Datum und Uhrzeit) eingetragen werden. Ein Newsletter mit Termin wird ab diesem Zeitpunkt automatisch verschickt und ist auf der Versandseite gesperrt; er erscheint dort in der Liste „Geplante und laufende Versände". Ohne Termin bleibt es beim manuellen Versand über die Versandseite.
 
-```php
-$open_newsletters = rex_ynewsletter::query()->where('status', 0)->orderBy('id', 'desc')->find();
+Für den automatischen Versand gibt es zwei Wege, die dieselbe Logik nutzen:
 
-if (0 == count($open_newsletters)) {
-    echo 'keine Newsletter zu verschicken';
-} else {
-    foreach ($open_newsletters as $newsletter) {
-        $newsletter->sendPackage(500);
-        echo $newsletter->ynewsletter_sent_count.' von '.$newsletter->ynewsletter_user_count.' verschickt: '.$newsletter->subject.' [id='.$newsletter->id.']'."\n";
-    }
-}
+**Konsole** (System-Cron, z.B. jede Minute):
+
+```
+php redaxo/bin/console ynewsletter:send
+php redaxo/bin/console ynewsletter:send --package-size=100 --delay=2
 ```
 
-Pro Lauf wird je Newsletter ein Paket von 500 Mails verschickt. Der Status wechselt erst in dem Lauf auf „versendet", der keine offenen Empfänger mehr findet; der Cronjob muss also so lange laufen, bis kein offener Newsletter mehr da ist.
+**Cronjob-AddOn**: Cronjob vom Typ „YNewsletter: geplante Newsletter versenden" anlegen, Intervall nach Bedarf. Der Cronjob läuft dann im gewählten Umfeld des Cronjob-AddOns (Backend, Frontend oder Skript).
+
+Ein Lauf verschickt jeden fälligen Newsletter komplett, paketweise mit optionaler Pause zwischen den Paketen, und setzt den Status auf „versendet". Während des Laufs ist der Newsletter gesperrt (`sending_started_at`), ein überlappender zweiter Lauf überspringt ihn. Bricht ein Lauf ab, bleibt die Sperre stehen; sie kann auf der Versandseite über „Sperre aufheben" entfernt werden, der nächste Lauf setzt den Versand dann fort, weil das Log den Fortschritt kennt.
+
+Ein Versandtermin in der Vergangenheit ist erlaubt: Der Newsletter geht beim nächsten Lauf sofort raus.
 
 
 
 ## Gut zu wissen
 
 ### Versand und Log
+
+* **Manuell oder terminiert**: Ohne Versandtermin geht der Newsletter über die Versandseite im Browser raus. Mit Versandtermin übernimmt die Konsole oder der Cronjob (siehe Schritt 10), und die Versandseite verweigert den manuellen Versand, bis der Termin entfernt ist. Der Testversand bleibt in beiden Fällen möglich.
 
 * **HTML-Fassung** ist der Artikel samt Template (`getArticleTemplate`), **Textfassung** der Artikelinhalt ohne Template und ohne HTML-Tags. Für beide werden die Platzhalter pro Empfänger ersetzt.
 * **Empfänger** sind alle Zeilen der Gruppentabelle, die den Filter erfüllen, abzüglich der Ausschlussliste und abzüglich der Empfänger, die für diesen Newsletter schon im **Log** stehen. Das Log ist damit der Versandfortschritt: Ein Empfänger bekommt den Newsletter genau einmal, auch wenn der Versand unterbrochen und später fortgesetzt wird.
