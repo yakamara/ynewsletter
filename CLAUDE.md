@@ -5,7 +5,7 @@ Einstieg für die Arbeit **am AddOn selbst**. Fachliche Bedienung steht in `READ
 
 ## Repo-Situation
 
-- Dieses Verzeichnis ist ein **eigenes Git-Repo** (`yakamara/redaxo_ynewsletter`, Branch `master`),
+- Dieses Verzeichnis ist ein **eigenes Git-Repo** (`yakamara/ynewsletter`, Branch `master`),
   eingehängt in einen REDAXO-Core-Workspace, der `redaxo/src/addons/*` per `.gitignore` ausblendet.
   Commits, Tags und Releases laufen **hier**, nicht im Core-Repo.
 - Die Befehle aus der übergeordneten `redaxo/CLAUDE.md` (`composer check`, `phpstan`, `cs`) gelten

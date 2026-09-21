@@ -1,7 +1,7 @@
 # 04 — Bekannte Baustellen
 
 Stand 2026-09-21. Quelle: Code-Durchsicht plus offene GitHub-Issues
-(`gh issue list -R yakamara/redaxo_ynewsletter`). Vor einem Fix das Issue lesen, danach dort
+(`gh issue list -R yakamara/ynewsletter`). Vor einem Fix das Issue lesen, danach dort
 referenzieren.
 
 ## Aus dem Code
