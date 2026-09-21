@@ -25,12 +25,18 @@ class rex_ynewsletter_exclusionlist extends \rex_yform_manager_dataset
         }
     }
 
-    public static function getUnsubscribeUrl($userEmail, $groups, $redirectToID): string
+    /**
+     * $redirectTo (absolute URL) hat Vorrang vor $redirectToID (Artikel-ID).
+     * Die Weiterleitung steckt verschlüsselt im Link; Links aus älteren Versionen
+     * ohne redirectTo bleiben gültig.
+     */
+    public static function getUnsubscribeUrl($userEmail, $groups, $redirectToID, string $redirectTo = ''): string
     {
         $a = [
             'email' => $userEmail,
             'groups' => $groups,
             'redirectToID' => $redirectToID,
+            'redirectTo' => $redirectTo,
         ];
 
         $a_encrypted = rex_ynewsletter::encrypt($a);
@@ -49,6 +55,9 @@ class rex_ynewsletter_exclusionlist extends \rex_yform_manager_dataset
         $UserInfo = rex_ynewsletter::decryptString($UserInfoString);
         if (is_array($UserInfo)) {
             self::excludeEMail($UserInfo['email'], $UserInfo['groups']);
+            if (!empty($UserInfo['redirectTo'])) {
+                rex_response::sendRedirect($UserInfo['redirectTo']);
+            }
             rex_response::sendRedirect(rex_getUrl($UserInfo['redirectToID'], '', [], '&'));
         }
     }
