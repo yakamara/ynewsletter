@@ -2,7 +2,12 @@
 
 declare(strict_types=1);
 
+/** @var rex_addon $this */
+
 $target_page = rex_request('page', 'string');
+$table_name = '';
+$wrapper = '';
+$show_title = false;
 
 if ('yform/manager/data_edit' == $target_page) {
     $table_name = rex_request('table_name', 'string');
@@ -18,8 +23,6 @@ if ('yform/manager/data_edit' == $target_page) {
     $table_name = $properties['yformTable'] ?? '';
     $wrapper = $properties['yformClass'] ?? '';
     $show_title = isset($properties['yformTitle']) && true == $properties['yformTitle'];
-} else {
-    $table_name = '';
 }
 
 $table = rex_yform_manager_table::get($table_name);
@@ -42,9 +45,9 @@ if ($table && rex::getUser() && (rex::getUser()->isAdmin() || rex_yform_manager_
             echo $page->getDataPage();
             $page = ob_get_clean();
 
-            $page = preg_replace('/<header(.*)<\/header>'.PHP_EOL.'<div class="row">/is', '$2<div class="row">', $page);
-            $page = preg_replace('/<header(.*)<\/header>'.PHP_EOL.'<div class="alert/is', '$2<div class="alert', $page);
-            $page = preg_replace('/<header(.*)<\/header>'.PHP_EOL.'<section class="rex-page-section">/is', '$2<section class="rex-page-section">', $page);
+            $page = preg_replace('/<header(.*)<\/header>' . PHP_EOL . '<div class="row">/is', '$2<div class="row">', $page);
+            $page = preg_replace('/<header(.*)<\/header>' . PHP_EOL . '<div class="alert/is', '$2<div class="alert', $page);
+            $page = preg_replace('/<header(.*)<\/header>' . PHP_EOL . '<section class="rex-page-section">/is', '$2<section class="rex-page-section">', $page);
 
             echo $page;
         }
@@ -53,7 +56,7 @@ if ($table && rex::getUser() && (rex::getUser()->isAdmin() || rex_yform_manager_
             echo '</div>';
         }
     } catch (Exception $e) {
-        $message = nl2br($e->getMessage()."\n".$e->getTraceAsString());
+        $message = nl2br($e->getMessage() . "\n" . $e->getTraceAsString());
         echo rex_view::warning($message);
     }
 } elseif (!$table) {

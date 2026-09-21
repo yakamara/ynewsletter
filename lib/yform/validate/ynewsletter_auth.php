@@ -12,7 +12,7 @@ class rex_yform_validate_ynewsletter_auth extends rex_yform_validate_abstract
             $pair = explode('=', $requestPair);
             $label = trim($pair[0]);
             $value = trim(rex_request($pair[1], 'string', ''));
-            $query[] = '`'.$label.'` = :'.$label;
+            $query[] = '`' . $label . '` = :' . $label;
             $queryParams[$label] = $value;
         }
 
@@ -20,7 +20,7 @@ class rex_yform_validate_ynewsletter_auth extends rex_yform_validate_abstract
             $pair = explode('=', $this->getElement('condition'));
             $label = trim($pair[0]);
             $value = trim($pair[1]);
-            $query[] = '`'.$label.'` = :'.$label;
+            $query[] = '`' . $label . '` = :' . $label;
             $queryParams[$label] = $value;
         }
 
@@ -30,14 +30,14 @@ class rex_yform_validate_ynewsletter_auth extends rex_yform_validate_abstract
             $sql->setDebug();
         }
 
-        $sql->setQuery('SELECT * FROM `'.$table.'` WHERE '.implode(' AND ', $query), $queryParams);
+        $sql->setQuery('SELECT * FROM `' . $table . '` WHERE ' . implode(' AND ', $query), $queryParams);
 
         if (1 != $sql->getRows()) {
             $this->params['warning'][] = 1;
             $this->params['warning_messages'][] = rex_i18n::translate($this->getElement('message'));
         } else {
             $main_id = (int) $sql->getValue('id');
-            $this->params['main_where'] = 'id='.$main_id;
+            $this->params['main_where'] = 'id=' . $main_id;
             $this->params['main_id'] = $main_id;
             $this->params['main_table'] = $table;
 

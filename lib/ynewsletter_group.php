@@ -1,6 +1,6 @@
 <?php
 
-class rex_ynewsletter_group extends \rex_yform_manager_dataset
+class rex_ynewsletter_group extends rex_yform_manager_dataset
 {
     public function countUsers()
     {
@@ -39,12 +39,12 @@ class rex_ynewsletter_group extends \rex_yform_manager_dataset
     public function getAllUsers()
     {
         $Users = [];
-        $query = 'select * from `'.$this->getValue('table').'`';
+        $query = 'select * from `' . $this->getValue('table') . '`';
         $filters = trim($this->getValue('filter'));
         if ('' != $filters) {
             $queryFilter = [];
             foreach (explode("\n", $filters) as $filter) {
-                $queryFilter[] = '('.trim($filter).')';
+                $queryFilter[] = '(' . trim($filter) . ')';
             }
             $query .= ' where ' . implode(' and ', $queryFilter);
         }

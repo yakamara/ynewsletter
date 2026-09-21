@@ -1,5 +1,7 @@
 <?php
 
+/** @var rex_addon $this */
+
 $newsletter_id = rex_request('newsletter_id', 'int', 0);
 $package_size = rex_request('package_size', 'int', 50);
 $ynewsletter_send = rex_request('ynewsletter_send', 'int', 0);
@@ -13,13 +15,13 @@ if (1 == $ynewsletter_send) {
         $newsletter = rex_ynewsletter::get($newsletter_id);
         if (!$newsletter) {
             echo rex_view::error(rex_i18n::translate('translate:ynewsletter_msg_newsletternotavailable'));
-        } elseif (1 == $newsletter->status) {
+        } elseif (1 == $newsletter->getValue('status')) {
             echo rex_view::warning(rex_i18n::translate('translate:ynewsletter_msg_newslettersent'));
         } else {
             $ready = $newsletter->sendPackage($package_size);
 
             if ($ready) {
-                echo rex_view::success($this->i18n('ynewsletter_msg_emailssent', $newsletter->ynewsletter_user_count, ($newsletter->subject . ' [id='.$newsletter->id.']')));
+                echo rex_view::success($this->i18n('ynewsletter_msg_emailssent', $newsletter->ynewsletter_user_count, $newsletter->getValue('subject') . ' [id=' . $newsletter->getId() . ']'));
             } else {
                 echo rex_view::warning($this->i18n('ynewsletter_msg_send', $newsletter->ynewsletter_user_count, $newsletter->ynewsletter_sent_count));
 
@@ -45,15 +47,15 @@ if (0 == count($open_newsletters)) {
     $newsletterSelect->setAttribute('class', 'form-control');
     $newsletterSelect->addOption(rex_i18n::msg('ynewsletter_choice_newsletter'), 0);
     foreach ($open_newsletters as $newsletter) {
-        if (1 == $newsletter->status) {
+        if (1 == $newsletter->getValue('status')) {
             $status_name = rex_i18n::translate('translate:ynewsletter_status_sent');
         } else {
             $status_name = rex_i18n::translate('translate:ynewsletter_status_open');
         }
 
-        $group = $newsletter->getRelatedDataset('group');
+        $group = $newsletter->getGroup();
 
-        $name = '[id='.$newsletter->getId().'] '.rex_i18n::msg('ynewsletter_subject').': '.$newsletter->subject . ' | '.rex_i18n::msg('ynewsletter_emails', $group->countUsers()).' | '.rex_i18n::msg('ynewsletter_status').': '.$status_name.'';
+        $name = '[id=' . $newsletter->getId() . '] ' . rex_i18n::msg('ynewsletter_subject') . ': ' . $newsletter->getValue('subject') . ' | ' . rex_i18n::msg('ynewsletter_emails', $group->countUsers()) . ' | ' . rex_i18n::msg('ynewsletter_status') . ': ' . $status_name;
         $newsletterSelect->addOption($name, $newsletter->getId());
         if ($newsletter_id == $newsletter->getId()) {
             $newsletterSelect->setSelected($newsletter->getId());

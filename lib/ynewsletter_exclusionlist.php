@@ -1,6 +1,6 @@
 <?php
 
-class rex_ynewsletter_exclusionlist extends \rex_yform_manager_dataset
+class rex_ynewsletter_exclusionlist extends rex_yform_manager_dataset
 {
     public static $unsubscribeKey = 'rex_ynewsletter_unsubscribe';
 
@@ -42,7 +42,7 @@ class rex_ynewsletter_exclusionlist extends \rex_yform_manager_dataset
         $a_encrypted = rex_ynewsletter::encrypt($a);
         $domain = rex_yrewrite::getCurrentDomain();
 
-        return $domain->getUrl().'?'.self::$unsubscribeKey.'='.urlencode($a_encrypted);
+        return $domain->getUrl() . '?' . self::$unsubscribeKey . '=' . urlencode($a_encrypted);
     }
 
     public static function initExclude()

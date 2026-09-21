@@ -40,7 +40,7 @@ class rex_var_ynewsletter_unsubscribe extends rex_var
                 break;
             case 'html':
             default:
-                $value = '<a href="'.$url.'">{{ ynewsletter.unsubscribe }}</a>';
+                $value = '<a href="' . $url . '">{{ ynewsletter.unsubscribe }}</a>';
         }
 
         return self::quote($value);

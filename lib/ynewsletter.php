@@ -1,6 +1,8 @@
 <?php
 
-class rex_ynewsletter extends \rex_yform_manager_dataset
+use Sprog\Wildcard;
+
+class rex_ynewsletter extends rex_yform_manager_dataset
 {
     public $ynewsletter_log_count;
     public $ynewsletter_sent_count;
@@ -48,9 +50,8 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
             return true;
         }
 
-        /** @var rex_ynewsletter_group $UserGroup */
-        $UserGroup = $this->getRelatedDataset('group');
-        $article_id = (int) $this->article_id;
+        $UserGroup = $this->getGroup();
+        $article_id = (int) $this->getValue('article_id');
 
         // Sprache des Newsletters für den gesamten Versand als aktuelle Sprache setzen,
         // damit Templates mit rex_clang::getCurrent() dieselbe Sprache sehen wie der Artikel (#58)
@@ -72,7 +73,7 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
             $AltBody = strip_tags($AltBody);
             $AltBody = html_entity_decode($AltBody);
 
-            $Subject = $this->subject;
+            $Subject = (string) $this->getValue('subject');
             // hasValue: Spalte fehlt, solange das Tableset nach dem Update noch nicht neu importiert wurde
             $Preheader = $this->hasValue('preheader') ? trim((string) $this->getValue('preheader')) : '';
 
@@ -96,8 +97,8 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
 
                 $mail->AddAddress($email);
                 // TODO: AddAddressName
-                $mail->From = $this->email_from;
-                $mail->FromName = $this->email_from_name;
+                $mail->From = (string) $this->getValue('email_from');
+                $mail->FromName = (string) $this->getValue('email_from_name');
 
                 $mail->Subject = $this->parseContent($Subject, $user, $UserGroup, $clang_id);
                 $mail->AltBody = self::optimizeTextBody($this->parseContent($AltBody, $user, $UserGroup, $clang_id));
@@ -118,6 +119,7 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
                 // Letzte Möglichkeit, die Mail zu verändern (Tracking, Header, eigene Platzhalter).
                 // Liefert der EP kein rex_mailer-Objekt zurück, wird die Mail nicht verschickt,
                 // aber als fehlgeschlagen geloggt, damit der Paketversand nicht hängen bleibt (#39).
+                /** @var mixed $mail */
                 $mail = rex_extension::registerPoint(new rex_extension_point('YNEWSLETTER_MAIL_BEFORE_SEND', $mail, $epParams));
 
                 $status = 0;
@@ -130,7 +132,7 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
                 // add to log
                 $log = rex_ynewsletter_log::create()
                     ->setValue('user_id', $user['id'])
-                    ->setValue('newsletter', $this->id)
+                    ->setValue('newsletter', $this->getId())
                     ->setValue('email', $email)
                     ->setValue('status', $status)
                     ->save();
@@ -163,8 +165,8 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
      */
     public static function parseWildcards(string $content, int $clangId): string
     {
-        if (class_exists(\Sprog\Wildcard::class)) {
-            return \Sprog\Wildcard::parse($content, $clangId);
+        if (class_exists(Wildcard::class)) {
+            return Wildcard::parse($content, $clangId);
         }
 
         return $content;
@@ -176,26 +178,45 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
      */
     public static function injectPreheader(string $html, string $preheader): string
     {
-        $div = '<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:transparent;opacity:0;">'.rex_escape($preheader).'</div>';
+        $div = '<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:transparent;opacity:0;">' . rex_escape($preheader) . '</div>';
 
         $count = 0;
         $result = preg_replace_callback('/<body\b[^>]*>/i', static function (array $match) use ($div) {
-            return $match[0].$div;
+            return $match[0] . $div;
         }, $html, 1, $count);
 
-        return $count > 0 ? $result : $div.$html;
+        return $count > 0 ? $result : $div . $html;
     }
 
+    /**
+     * Versandgruppe des Newsletters. Wirft, wenn keine Gruppe zugeordnet ist,
+     * denn ohne Gruppe gibt es keine Empfängertabelle und kein E-Mail-Feld.
+     */
+    public function getGroup(): rex_ynewsletter_group
+    {
+        $group = $this->getRelatedDataset('group');
+        if (!$group instanceof rex_ynewsletter_group) {
+            throw new rex_exception('Newsletter [id=' . $this->getId() . '] has no group');
+        }
+
+        return $group;
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     public function getUsers()
     {
-        return $this->getRelatedDataset('group')->getAllUsers();
+        return $this->getGroup()->getAllUsers();
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     public function getUserOffset()
     {
         $Users = $this->getUsers();
-        $group = $this->getRelatedDataset('group');
-        $filteredUsers = $group->filterExclusions($Users);
+        $filteredUsers = $this->getGroup()->filterExclusions($Users);
 
         $this->ynewsletter_user_count = count($filteredUsers);
 
@@ -209,8 +230,9 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
         // remove log users from send_list
         $this->ynewsletter_sent_count = $this->ynewsletter_log_count;
         foreach ($log_users as $log_user) {
-            if (isset($filteredUsers[$log_user->user_id])) {
-                unset($filteredUsers[$log_user->user_id]);
+            $userId = (int) $log_user->getValue('user_id');
+            if (isset($filteredUsers[$userId])) {
+                unset($filteredUsers[$userId]);
             }
         }
 

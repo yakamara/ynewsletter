@@ -1,0 +1,21 @@
+{
+    "name": "yakamara/ynewsletter",
+    "description": "REDAXO AddOn: Newsletter-Versand an Gruppen aus YForm-Tabellen",
+    "license": "MIT",
+    "require-dev": {
+        "redaxo/php-cs-fixer-config": "^2.0",
+        "friendsofphp/php-cs-fixer": "^3.14",
+        "phpunit/phpunit": "^10.5"
+    },
+    "config": {
+        "platform": {
+            "php": "8.3.0"
+        },
+        "sort-packages": true
+    },
+    "scripts": {
+        "cs-dry": "php-cs-fixer fix -v --ansi --dry-run --config=.php-cs-fixer.dist.php",
+        "cs-fix": "php-cs-fixer fix -v --ansi --config=.php-cs-fixer.dist.php",
+        "unit-test": "phpunit --testdox"
+    }
+}
