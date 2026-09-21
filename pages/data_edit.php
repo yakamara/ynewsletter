@@ -58,4 +58,7 @@ if ($table && rex::getUser() && (rex::getUser()->isAdmin() || rex_yform_manager_
     }
 } elseif (!$table) {
     echo rex_view::warning(rex_i18n::msg('yform_table_not_found'));
+} else {
+    // Tabelle vorhanden, aber dem User fehlt das YForm-Tabellenrecht: Hinweis statt leerer Seite (#48)
+    echo rex_view::warning(rex_i18n::msg('ynewsletter_msg_no_table_permission', $table->getTableName()));
 }
