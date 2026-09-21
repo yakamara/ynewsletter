@@ -53,6 +53,7 @@ jobs:
             -   name: Copy and install AddOns
                 run: |
                     rsync -a --exclude='vendor' --exclude='.github' --exclude='.git' --exclude='redaxo_cms' './' 'redaxo_cms/redaxo/src/addons/${{ github.event.repository.name }}'
+                    redaxo_cms/redaxo/bin/console package:install 'cronjob'
                     redaxo_cms/redaxo/bin/console package:install 'phpmailer'
                     redaxo_cms/redaxo/bin/console install:download 'yform' '5.*'
                     redaxo_cms/redaxo/bin/console package:install 'yform'
