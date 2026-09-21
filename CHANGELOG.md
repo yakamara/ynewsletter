@@ -4,6 +4,15 @@ Changelog
 Unveröffentlicht
 ----------------
 
+* Neue Extension Points `YNEWSLETTER_MAIL_BEFORE_SEND` und `YNEWSLETTER_MAIL_SENT` (#39)
+* Preheader-Feld im Newsletter; wird unsichtbar nach dem `<body>`-Tag eingefügt (#41)
+* Sprog-Platzhalter werden beim Versand in Betreff, Preheader, HTML- und Textfassung ersetzt (#38, #58)
+* Beim Versand ist die Sprache des Newsletters die aktuelle Sprache, Templates mit `rex_clang::getCurrent()` liefern damit die richtige Sprache (#58)
+* `rex_ynewsletter::isSending()` für Templates, um Platzhalter beim normalen Seitenaufruf durch einen Standardtext zu ersetzen (#44)
+* `REX_YNEWSLETTER_UNSUBSCRIBE` akzeptiert `redirectTo` mit einer absoluten URL (#32)
+* Datenseiten zeigen einen Hinweis statt einer leeren Seite, wenn das YForm-Tabellenrecht fehlt (#48)
+* Ausschlussliste ist im YForm-Menü versteckt wie die anderen Tabellen (#34)
+* Testversand: ID-Feld ist ein Zahlenfeld mit korrektem Label
 * Anhänge werden über den Dateisystempfad (`rex_path::media`) angehängt statt über den URL-Pfad; damit funktioniert der Versand mit Anhängen auch aus Cronjobs und Konsole
 * Englische Sprachdatei vervollständigt
 * YForm 4/5: Rechteabfrage der Datenseiten angepasst; Abmeldelink mit ungültigem Parameter erzeugt keinen Eintrag mehr (#52); E-Mail-Abgleich der Ausschlussliste ignoriert Groß-/Kleinschreibung (#60)

@@ -9,6 +9,8 @@ ynewsletter_datetime = Created
 
 ynewsletter_key = Key
 ynewsletter_subject = Subject
+ynewsletter_preheader = Preheader
+ynewsletter_preheader_info = Short text that many e-mail clients show after the subject in the inbox preview. It is inserted invisibly at the top of the HTML; placeholders such as REX_YNEWSLETTER_DATA are allowed.
 ynewsletter_email_from = Sender e-mail
 ynewsletter_email_from_name = Sender name
 ynewsletter_article = Article
@@ -78,3 +80,4 @@ ynewsletter_readme = ReadMe
 
 ynewsletter_choice_newsletter = Please select a newsletter
 ynewsletter_msg_newsletter_not_selected = No newsletter was selected.
+ynewsletter_msg_no_table_permission = You do not have the YForm table permission to edit table "{0}". Please grant it in the user management under YForm tables.

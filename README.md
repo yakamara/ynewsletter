@@ -188,7 +188,61 @@ REX_YNEWSLETTER_UNSUBSCRIBE[redirectToID=3 output=url]
 ``` 
 Es wird ein Abmeldelink erstellt mit dem aktuellen User und der aktuellen Gruppe.
 
-Sofern der Newsletter im Browser aufgerufen wird, verschwinden die REX_VARS.
+#### Beispiel 4 (Weiterleitung auf eine beliebige URL)
+
+```
+REX_YNEWSLETTER_UNSUBSCRIBE[redirectTo="https://www.example.org/abgemeldet" output=url]
+```
+Statt einer Artikel-ID kann mit `redirectTo` eine absolute URL angegeben werden, auf die nach der Abmeldung weitergeleitet wird. Ist beides angegeben, gewinnt `redirectTo`.
+
+Der Linktext bei `output=html` ist der Sprog-Platzhalter `{{ ynewsletter.unsubscribe }}`; er wird beim Versand ersetzt, wenn Sprog installiert ist und den Platzhalter kennt. Ohne Sprog `output=url` verwenden und den Link selbst bauen.
+
+
+### Platzhalter auf der Webseite
+
+Die `REX_YNEWSLETTER_*`-Platzhalter werden erst beim Versand ersetzt. Wird der Newsletter-Artikel im Browser aufgerufen, stehen sie deshalb wörtlich im Text. Templates und Module können das abfangen:
+
+```php
+<?php if (rex_ynewsletter::isSending()): ?>
+    REX_YNEWSLETTER_DATA[field="name" prefix="Sehr geehrte/r Herr/Frau "]
+<?php else: ?>
+    Sehr geehrte Damen und Herren
+<?php endif; ?>
+```
+
+`rex_ynewsletter::getCurrentSending()` liefert währenddessen den Newsletter-Datensatz (z.B. für Betreff oder Gruppe).
+
+
+### Sprache
+
+Beim Versand ist die im Newsletter gewählte Sprache die aktuelle Sprache (`rex_clang::getCurrent()`), auch für Templates und Sprog-Platzhalter. Ohne Auswahl wird die Sprache des angemeldeten Backend-Users verwendet.
+
+
+### Sprog
+
+Ist Sprog installiert, werden `{{ platzhalter }}` in Betreff, Preheader, HTML- und Textfassung beim Versand in der Sprache des Newsletters ersetzt.
+
+
+### Preheader
+
+Im Newsletter kann ein Preheader hinterlegt werden: ein Kurztext, den viele E-Mail-Programme in der Posteingangsvorschau nach dem Betreff anzeigen. Er wird unsichtbar direkt nach dem `<body>`-Tag eingefügt und darf `REX_YNEWSLETTER_DATA`- und Sprog-Platzhalter enthalten.
+
+
+### Extension Points
+
+| Extension Point | Subject | Params | Zweck |
+| --- | --- | --- | --- |
+| `YNEWSLETTER_MAIL_BEFORE_SEND` | `rex_mailer` | `newsletter`, `group`, `user`, `email` | Mail vor dem Versand verändern (Header, Tracking, eigene Platzhalter). Gibt der EP kein `rex_mailer`-Objekt zurück, wird die Mail nicht verschickt, aber als fehlgeschlagen geloggt. |
+| `YNEWSLETTER_MAIL_SENT` | Status (`1` ok, `0` fehlgeschlagen) | `newsletter`, `group`, `user`, `email`, `mail` | Nach dem Versandversuch, z.B. für eigene Protokolle. |
+
+```php
+rex_extension::register('YNEWSLETTER_MAIL_BEFORE_SEND', function (rex_extension_point $ep) {
+    /** @var rex_mailer $mail */
+    $mail = $ep->getSubject();
+    $mail->addCustomHeader('List-Unsubscribe', '<mailto:abmelden@example.org>');
+    return $mail;
+});
+```
 
 
 

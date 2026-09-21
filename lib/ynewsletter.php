@@ -6,6 +6,24 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
     public $ynewsletter_sent_count;
     public $ynewsletter_user_count;
 
+    /** @var self|null Newsletter, der gerade versendet wird */
+    private static $currentSending;
+
+    /**
+     * True, solange send() läuft. Templates und Module können damit im normalen
+     * Seitenaufruf einen Standardtext ausgeben, während im Versand die
+     * REX_YNEWSLETTER_*-Platzhalter aufgelöst werden (#44).
+     */
+    public static function isSending(): bool
+    {
+        return null !== self::$currentSending;
+    }
+
+    public static function getCurrentSending(): ?self
+    {
+        return self::$currentSending;
+    }
+
     public function sendPackage($size = 20)
     {
         if (0 == $size) {
@@ -32,72 +50,140 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
 
         /** @var rex_ynewsletter_group $UserGroup */
         $UserGroup = $this->getRelatedDataset('group');
-        $article_id = $this->article_id;
-        $clang_id = $this->clang_id;
+        $article_id = (int) $this->article_id;
 
-        // TODO: noch contenttyp bauen [article/yform-email-templates] / abstract bauen
+        // Sprache des Newsletters für den gesamten Versand als aktuelle Sprache setzen,
+        // damit Templates mit rex_clang::getCurrent() dieselbe Sprache sehen wie der Artikel (#58)
+        $clang_id = (int) $this->getValue('clang_id');
+        if (!$clang_id || !rex_clang::exists($clang_id)) {
+            $clang_id = rex_clang::getCurrentId();
+        }
+        $previousClangId = rex_clang::getCurrentId();
+        rex_clang::setCurrentId($clang_id);
+        self::$currentSending = $this;
 
-        $article = new rex_article_content($article_id, $clang_id);
-        $Body = $article->getArticleTemplate();
+        try {
+            // TODO: noch contenttyp bauen [article/yform-email-templates] / abstract bauen
 
-        $AltBody = $article->getArticle();
-        $AltBody = strip_tags($AltBody);
-        $AltBody = html_entity_decode($AltBody);
+            $article = new rex_article_content($article_id, $clang_id);
+            $Body = $article->getArticleTemplate();
 
-        $Subject = $this->subject;
+            $AltBody = $article->getArticle();
+            $AltBody = strip_tags($AltBody);
+            $AltBody = html_entity_decode($AltBody);
 
-        $mediaList = [];
-        if ('' != $this->getValue('attachments')) {
-            foreach (explode(',', $this->getValue('attachments')) as $mediaFilename) {
-                $media = rex_media::get($mediaFilename);
-                if ($media) {
-                    $mediaList[] = $media;
+            $Subject = $this->subject;
+            // hasValue: Spalte fehlt, solange das Tableset nach dem Update noch nicht neu importiert wurde
+            $Preheader = $this->hasValue('preheader') ? trim((string) $this->getValue('preheader')) : '';
+
+            $mediaList = [];
+            if ('' != $this->getValue('attachments')) {
+                foreach (explode(',', $this->getValue('attachments')) as $mediaFilename) {
+                    $media = rex_media::get($mediaFilename);
+                    if ($media) {
+                        $mediaList[] = $media;
+                    }
                 }
             }
-        }
 
-        foreach ($users as $user) {
-            $email = $user[$UserGroup->getEMailField()];
+            foreach ($users as $user) {
+                $email = $user[$UserGroup->getEMailField()];
 
-            $mail = new rex_mailer();
-            foreach ($mediaList as $media) {
-                $mail->addAttachment(rex_path::media($media->getFileName()), $media->getOriginalFileName());
+                $mail = new rex_mailer();
+                foreach ($mediaList as $media) {
+                    $mail->addAttachment(rex_path::media($media->getFileName()), $media->getOriginalFileName());
+                }
+
+                $mail->AddAddress($email);
+                // TODO: AddAddressName
+                $mail->From = $this->email_from;
+                $mail->FromName = $this->email_from_name;
+
+                $mail->Subject = $this->parseContent($Subject, $user, $UserGroup, $clang_id);
+                $mail->AltBody = self::optimizeTextBody($this->parseContent($AltBody, $user, $UserGroup, $clang_id));
+
+                $BodyUser = $this->parseContent($Body, $user, $UserGroup, $clang_id);
+                if ('' !== $Preheader) {
+                    $BodyUser = self::injectPreheader($BodyUser, $this->parseContent($Preheader, $user, $UserGroup, $clang_id));
+                }
+                $mail->Body = $BodyUser;
+
+                $epParams = [
+                    'newsletter' => $this,
+                    'group' => $UserGroup,
+                    'user' => $user,
+                    'email' => $email,
+                ];
+
+                // Letzte Möglichkeit, die Mail zu verändern (Tracking, Header, eigene Platzhalter).
+                // Liefert der EP kein rex_mailer-Objekt zurück, wird die Mail nicht verschickt,
+                // aber als fehlgeschlagen geloggt, damit der Paketversand nicht hängen bleibt (#39).
+                $mail = rex_extension::registerPoint(new rex_extension_point('YNEWSLETTER_MAIL_BEFORE_SEND', $mail, $epParams));
+
+                $status = 0;
+                if ($mail instanceof rex_mailer && $mail->Send()) {
+                    $status = 1;
+                }
+
+                rex_extension::registerPoint(new rex_extension_point('YNEWSLETTER_MAIL_SENT', $status, $epParams + ['mail' => $mail]));
+
+                // add to log
+                $log = rex_ynewsletter_log::create()
+                    ->setValue('user_id', $user['id'])
+                    ->setValue('newsletter', $this->id)
+                    ->setValue('email', $email)
+                    ->setValue('status', $status)
+                    ->save();
+
+                ++$this->ynewsletter_sent_count;
             }
-
-            $mail->AddAddress($email);
-            // TODO: AddAddressName
-            $mail->From = $this->email_from;
-            $mail->FromName = $this->email_from_name;
-
-            $SubjectUser = rex_var::parse($Subject, rex_var::ENV_OUTPUT, 'ynewsletter_template', ['user' => $user, 'group' => $UserGroup]);
-            $SubjectUser = rex_file::getOutput(rex_stream::factory('ynewsletter/plain_content', $SubjectUser));
-            $mail->Subject = $SubjectUser;
-
-            $AltBodyUser = rex_var::parse($AltBody, rex_var::ENV_OUTPUT, 'ynewsletter_template', ['user' => $user, 'group' => $UserGroup]);
-            $AltBodyUser = rex_file::getOutput(rex_stream::factory('ynewsletter/plain_content', $AltBodyUser));
-            $mail->AltBody = self::optimizeTextBody($AltBodyUser);
-
-            $BodyUser = rex_var::parse($Body, rex_var::ENV_OUTPUT, 'ynewsletter_template', ['user' => $user, 'group' => $UserGroup]);
-            $BodyUser = rex_file::getOutput(rex_stream::factory('ynewsletter/plain_content', $BodyUser));
-            $mail->Body = $BodyUser;
-
-            $status = 0;
-            if ($mail->Send()) {
-                $status = 1;
-            }
-
-            // add to log
-            $log = rex_ynewsletter_log::create()
-                ->setValue('user_id', $user['id'])
-                ->setValue('newsletter', $this->id)
-                ->setValue('email', $email)
-                ->setValue('status', $status)
-                ->save();
-
-            ++$this->ynewsletter_sent_count;
+        } finally {
+            self::$currentSending = null;
+            rex_clang::setCurrentId($previousClangId);
         }
 
         return false;
+    }
+
+    /**
+     * Löst REX_YNEWSLETTER_*-Platzhalter und eingebettetes PHP für einen Empfänger auf
+     * und ersetzt anschließend Sprog-Platzhalter ({{ … }}), sofern Sprog installiert ist.
+     */
+    private function parseContent(string $content, array $user, rex_ynewsletter_group $group, int $clangId): string
+    {
+        $content = rex_var::parse($content, rex_var::ENV_OUTPUT, 'ynewsletter_template', ['user' => $user, 'group' => $group]);
+        $content = rex_file::getOutput(rex_stream::factory('ynewsletter/plain_content', $content));
+
+        return self::parseWildcards($content, $clangId);
+    }
+
+    /**
+     * Sprog ersetzt {{ platzhalter }} nur über den OUTPUT_FILTER im Frontend, den der
+     * Mailversand nie durchläuft. Deshalb hier explizit aufrufen (#38, #58).
+     */
+    public static function parseWildcards(string $content, int $clangId): string
+    {
+        if (class_exists(\Sprog\Wildcard::class)) {
+            return \Sprog\Wildcard::parse($content, $clangId);
+        }
+
+        return $content;
+    }
+
+    /**
+     * Fügt den Preheader unsichtbar direkt nach dem öffnenden body-Tag ein.
+     * Fehlt ein body-Tag, wird er vorangestellt (#41).
+     */
+    public static function injectPreheader(string $html, string $preheader): string
+    {
+        $div = '<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:transparent;opacity:0;">'.rex_escape($preheader).'</div>';
+
+        $count = 0;
+        $result = preg_replace_callback('/<body\b[^>]*>/i', static function (array $match) use ($div) {
+            return $match[0].$div;
+        }, $html, 1, $count);
+
+        return $count > 0 ? $result : $div.$html;
     }
 
     public function getUsers()
