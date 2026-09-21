@@ -1,4 +1,80 @@
 ynewsletter = YNewsletter
+navigation_ynewsletter = YNewsletter
+ynewsletter_newsletter = Newsletter
+ynewsletter_send = Sending
+ynewsletter_log = Log
+ynewsletter_log_userid = User ID
+ynewsletter_log_status = Status
+ynewsletter_datetime = Created
+
+ynewsletter_key = Key
+ynewsletter_subject = Subject
+ynewsletter_email_from = Sender e-mail
+ynewsletter_email_from_name = Sender name
+ynewsletter_article = Article
+ynewsletter_status = Status
+ynewsletter_status_open = open
+ynewsletter_status_sent = sent
+
+ynewsletter_msg_pleaseentersubject = Please enter a subject
+ynewsletter_msg_pleaseenteremail = Please enter a sender
+ynewsletter_msg_pleaseentercorrectemail = Please enter a valid sender e-mail address
+ynewsletter_msg_pleaseenterkey = Please enter an identifier/key
+ynewsletter_msg_pleaseenteruniquekey = Please enter a unique identifier/key
+ynewsletter_msg_pleaseselectarticle = Please select an article
+ynewsletter_msg_pleasecreateagroup = Please create a user group first
+ynewsletter_msg_pleaseenteremailfield = Please enter the e-mail field of the user table
+ynewsletter_msg_pleaseentername = Please enter the group name
+ynewsletter_msg_pleaseentertable = Please enter the user table
+
+ynewsletter_msg_newsletternotavailable = Newsletter not found
+ynewsletter_msg_newslettersent = Newsletter has already been sent
+ynewsletter_msg_emailssent = Newsletter "{1}" was sent successfully [{0} e-mails]
+
+ynewsletter_exclusionlist = Exclusion list
+
+ynewsletter_groups = Groups
+ynewsletter_group = Group
+ynewsletter_group_name = Name
+ynewsletter_group_table = Table
+ynewsletter_group_filter = Filter
+ynewsletter_group_filter_info = Please list the WHERE conditions one per line, e.g. newsletter=1
+ynewsletter_group_emailfield = E-mail field
+ynewsletter_group_emailfield_info = Please enter the table field containing the e-mail address
+
+ynewsletter_select_package = Select batch size
+ynewsletter_select_newsletter = Newsletter
+ynewsletter_package_all = Send to all users at once
+ynewsletter_package_10 = Send in batches of 10 users
+ynewsletter_package_50 = Send in batches of 50 users
+ynewsletter_package_100 = Send in batches of 100 users
+
+ynewsletter_msg_send = Newsletter is being sent: total recipients [{0}] / e-mails sent so far [{1}] / Please wait, sending is in progress and the page will reload shortly.
+ynewsletter_emails = {0} recipients
+
+ynewsletter_send_delay = Sending delay
+ynewsletter_send_package_delay = of {0} second(s)
+ynewsletter_send_delay_notice = Usually no change is needed. The delay applies to a whole batch: after the batch has been sent, the delay takes effect and the page reload starts accordingly later.
+ynewsletter_form_send = Send newsletter
+
+ynewsletter_form_send_test = Send test
+ynewsletter_send_test = Test sending
+ynewsletter_send_test_id_testuser = ID of the test user
+ynewsletter_msg_newsletter_user_id_wrong = The test user ID was not found in this newsletter
+ynewsletter_msg_testemailssent = Test newsletter has been sent. Please check that everything works as expected. Newsletter "{1}"
+
+ynewsletter_msg_noopennewsletteravailable = No open newsletters available (any more).
+
+ynewsletter_validate_auth_name = Authenticate
+ynewsletter_validate_auth_table = Table
+ynewsletter_validate_auth_request = REQUEST values to check against
+ynewsletter_validate_auth_condition = Conditions for the WHERE clause, e.g. <code>status=0</code>
+ynewsletter_validate_auth_message = Error message
+ynewsletter_validate_auth_fields = Fields (comma-separated) whose stored values should be available in the e-mail template
+ynewsletter_validate_auth_description = Validate registration
+
+ynewsletter_docs_intro = Intro
+ynewsletter_readme = ReadMe
 
 ynewsletter_choice_newsletter = Please select a newsletter
 ynewsletter_msg_newsletter_not_selected = No newsletter was selected.
