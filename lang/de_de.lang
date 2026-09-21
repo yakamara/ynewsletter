@@ -83,7 +83,7 @@ ynewsletter_msg_newsletter_not_selected = Es wurde kein Newsletter ausgewählt.
 ynewsletter_msg_no_table_permission = Für die Tabelle "{0}" fehlt das YForm-Tabellenrecht zum Bearbeiten. Bitte in der Benutzerverwaltung unter YForm-Tabellen freigeben.
 
 ynewsletter_send_at = Versandtermin
-ynewsletter_send_at_info = Leer lassen für den manuellen Versand über die Versandseite. Mit Datum und Uhrzeit (Format JJJJ-MM-TT HH:MM:SS) wird der Newsletter ab diesem Zeitpunkt automatisch über die Konsole (<code>ynewsletter:send</code>) oder den Cronjob verschickt und ist auf der Versandseite gesperrt.
+ynewsletter_send_at_info = <strong>Achtung:</strong> Sobald hier ein Termin steht und der Newsletter offen ist, startet der Versand beim nächsten Lauf von Konsole oder Cronjob automatisch, bei einem Termin in der Vergangenheit also praktisch sofort nach dem Speichern. Leer lassen für den manuellen Versand über die Versandseite. Mit Datum und Uhrzeit (Format JJJJ-MM-TT HH:MM:SS) läuft der Versand über die Konsole (<code>ynewsletter:send</code>) oder den Cronjob, auf der Versandseite ist der Newsletter dann gesperrt.
 ynewsletter_scheduled = Geplante und laufende Versände
 ynewsletter_scheduled_info = Diese Newsletter werden über <code>bin/console ynewsletter:send</code> oder den Cronjob „{0}“ verschickt. Für einen manuellen Versand den Versandtermin im Newsletter entfernen.
 ynewsletter_scheduled_for = geplant für {0}

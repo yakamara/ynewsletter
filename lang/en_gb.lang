@@ -83,7 +83,7 @@ ynewsletter_msg_newsletter_not_selected = No newsletter was selected.
 ynewsletter_msg_no_table_permission = You do not have the YForm table permission to edit table "{0}". Please grant it in the user management under YForm tables.
 
 ynewsletter_send_at = Scheduled sending date
-ynewsletter_send_at_info = Leave empty to send manually from the sending page. With a date and time (format YYYY-MM-DD HH:MM:SS) the newsletter is sent automatically from that moment on via the console (<code>ynewsletter:send</code>) or the cronjob and is locked on the sending page.
+ynewsletter_send_at_info = <strong>Caution:</strong> As soon as a date is set here and the newsletter is open, sending starts automatically with the next console or cronjob run; with a date in the past that means practically right after saving. Leave empty to send manually from the sending page. With a date and time (format YYYY-MM-DD HH:MM:SS) sending runs via the console (<code>ynewsletter:send</code>) or the cronjob, and the newsletter is locked on the sending page.
 ynewsletter_scheduled = Scheduled and running deliveries
 ynewsletter_scheduled_info = These newsletters are sent via <code>bin/console ynewsletter:send</code> or the cronjob "{0}". To send manually, remove the scheduled date in the newsletter.
 ynewsletter_scheduled_for = scheduled for {0}

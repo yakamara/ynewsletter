@@ -141,7 +141,7 @@ php redaxo/bin/console ynewsletter:send --package-size=100 --delay=2
 
 Ein Lauf verschickt jeden fälligen Newsletter komplett, paketweise mit optionaler Pause zwischen den Paketen, und setzt den Status auf „versendet". Während des Laufs ist der Newsletter gesperrt (`sending_started_at`), ein überlappender zweiter Lauf überspringt ihn. Bricht ein Lauf ab, bleibt die Sperre stehen; sie kann auf der Versandseite über „Sperre aufheben" entfernt werden, der nächste Lauf setzt den Versand dann fort, weil das Log den Fortschritt kennt.
 
-Ein Versandtermin in der Vergangenheit ist erlaubt: Der Newsletter geht beim nächsten Lauf sofort raus.
+**Achtung:** Sobald ein Termin gespeichert ist und der Newsletter offen ist, startet der Versand beim nächsten Lauf automatisch. Ein Termin in der Vergangenheit bedeutet also einen Versand praktisch sofort nach dem Speichern. Wer erst testen will, nutzt den Testversand oder trägt den Termin als Letztes ein.
 
 
 
