@@ -22,4 +22,9 @@ $extensions = [
 
 $paths = ['../../../../redaxo/src/addons/' . getenv('ADDON_KEY') . '/'];
 
-\rexstan\RexStanUserConfig::save(5, $paths, $extensions, 80300);
+// rexstan 3 hat die Klasse umbenannt, rexstan 2 kennt nur den alten Namensraum
+$configClass = class_exists(FriendsOfRedaxo\RexStan\RexStanUserConfig::class)
+    ? FriendsOfRedaxo\RexStan\RexStanUserConfig::class
+    : rexstan\RexStanUserConfig::class;
+
+$configClass::save(5, $paths, $extensions, 80300);
