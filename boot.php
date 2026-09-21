@@ -8,3 +8,8 @@ rex_yform_manager_dataset::setModelClass('rex_ynewsletter_exclusionlist', rex_yn
 rex_extension::register('PACKAGES_INCLUDED', static function ($params) {
     rex_ynewsletter_exclusionlist::initExclude();
 });
+
+// Cronjob-Typ für den terminierten Versand, falls das Cronjob-AddOn aktiv ist
+if (rex_addon::get('cronjob')->isAvailable()) {
+    rex_cronjob_manager::registerType(rex_ynewsletter_cronjob_send::class);
+}

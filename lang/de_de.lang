@@ -81,3 +81,22 @@ ynewsletter_readme = ReadMe
 ynewsletter_choice_newsletter = Bitte einen Newsletter auswählen
 ynewsletter_msg_newsletter_not_selected = Es wurde kein Newsletter ausgewählt.
 ynewsletter_msg_no_table_permission = Für die Tabelle "{0}" fehlt das YForm-Tabellenrecht zum Bearbeiten. Bitte in der Benutzerverwaltung unter YForm-Tabellen freigeben.
+
+ynewsletter_send_at = Versandtermin
+ynewsletter_send_at_info = Leer lassen für den manuellen Versand über die Versandseite. Mit Datum und Uhrzeit (Format JJJJ-MM-TT HH:MM:SS) wird der Newsletter ab diesem Zeitpunkt automatisch über die Konsole (<code>ynewsletter:send</code>) oder den Cronjob verschickt und ist auf der Versandseite gesperrt.
+ynewsletter_scheduled = Geplante und laufende Versände
+ynewsletter_scheduled_info = Diese Newsletter werden über <code>bin/console ynewsletter:send</code> oder den Cronjob „{0}“ verschickt. Für einen manuellen Versand den Versandtermin im Newsletter entfernen.
+ynewsletter_scheduled_for = geplant für {0}
+ynewsletter_sending_since = Versand läuft seit {0}
+ynewsletter_progress = {0} von {1} versendet
+ynewsletter_unlock = Sperre aufheben
+ynewsletter_msg_unlocked = Die Versandsperre von Newsletter [id={0}] wurde aufgehoben.
+ynewsletter_msg_scheduled_no_browser = Newsletter [id={0}] hat einen Versandtermin ({1}) und wird über die Konsole verschickt. Für den manuellen Versand den Termin im Newsletter entfernen.
+ynewsletter_msg_locked = Newsletter [id={0}] wird gerade versendet (seit {1}). Falls der Prozess abgebrochen ist, kann die Sperre unten aufgehoben werden.
+ynewsletter_msg_csrf = Ungültiger oder abgelaufener Sicherheitstoken, bitte die Seite neu laden.
+ynewsletter_cronjob_send = YNewsletter: geplante Newsletter versenden
+ynewsletter_cronjob_package_size = Paketgröße
+ynewsletter_cronjob_package_size_notice = E-Mails pro Paket, 0 = alle auf einmal
+ynewsletter_console_nothing_due = Keine fälligen Newsletter.
+ynewsletter_console_locked = Newsletter [id={0}] übersprungen, Versand läuft bereits seit {1}.
+ynewsletter_console_sent = Newsletter [id={0}] "{1}": {2} von {3} E-Mails versendet, Status: {4}.

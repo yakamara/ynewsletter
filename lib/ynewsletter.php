@@ -26,8 +26,18 @@ class rex_ynewsletter extends rex_yform_manager_dataset
         return self::$currentSending;
     }
 
+    /**
+     * Versendet ein Paket. Rückgabe true = nichts mehr zu tun (Status auf versendet gesetzt),
+     * false = Paket verschickt, weitere folgen.
+     *
+     * @throws rex_exception wenn ein Versandtermin gesetzt und noch nicht erreicht ist
+     */
     public function sendPackage($size = 20)
     {
+        if ($this->isScheduled() && !$this->isDue()) {
+            throw new rex_exception('Newsletter [id=' . $this->getId() . '] is scheduled for ' . $this->getSendAt() . ' and not due yet');
+        }
+
         if (0 == $size) {
             return $this->sendAll();
         }
@@ -41,6 +51,166 @@ class rex_ynewsletter extends rex_yform_manager_dataset
     {
         $users = $this->getUserOffset();
         return $this->send($users);
+    }
+
+    /**
+     * Versendet paketweise, bis keine Empfänger mehr offen sind. Für Konsole und Cronjob;
+     * im Browser übernimmt der Seiten-Reload diese Schleife.
+     *
+     * @param callable(self):void|null $afterPackage wird nach jedem Paket aufgerufen (Fortschritt)
+     */
+    public function sendComplete(int $packageSize = 100, int $delaySeconds = 0, ?callable $afterPackage = null): void
+    {
+        $packageSize = max(1, $packageSize);
+        while (!$this->sendPackage($packageSize)) {
+            if (null !== $afterPackage) {
+                $afterPackage($this);
+            }
+            if ($delaySeconds > 0) {
+                sleep($delaySeconds);
+            }
+        }
+    }
+
+    /**
+     * Versendet alle fälligen Newsletter (Termin erreicht, Status offen). Jeder Newsletter wird
+     * über sending_started_at gesperrt, damit sich überlappende Läufe nicht in die Quere kommen.
+     *
+     * @return list<string> Meldungen je Newsletter
+     */
+    public static function sendDue(int $packageSize = 100, int $delaySeconds = 0): array
+    {
+        $messages = [];
+        $due = self::getDue();
+        if (0 === count($due)) {
+            $messages[] = rex_i18n::msg('ynewsletter_console_nothing_due');
+            return $messages;
+        }
+
+        foreach ($due as $newsletter) {
+            if (!$newsletter->acquireSendLock()) {
+                $messages[] = rex_i18n::msg('ynewsletter_console_locked', $newsletter->getId(), (string) $newsletter->getSendingStartedAt());
+                continue;
+            }
+
+            try {
+                $newsletter->sendComplete($packageSize, $delaySeconds);
+            } finally {
+                $newsletter->releaseSendLock();
+            }
+
+            $messages[] = rex_i18n::msg(
+                'ynewsletter_console_sent',
+                $newsletter->getId(),
+                (string) $newsletter->getValue('subject'),
+                (int) $newsletter->ynewsletter_sent_count,
+                (int) $newsletter->ynewsletter_user_count,
+                rex_i18n::msg(1 == $newsletter->getValue('status') ? 'ynewsletter_status_sent' : 'ynewsletter_status_open'),
+            );
+        }
+
+        return $messages;
+    }
+
+    /**
+     * Offene Newsletter mit erreichtem Versandtermin.
+     *
+     * @return rex_yform_manager_collection<static>
+     */
+    public static function getDue(?DateTimeInterface $now = null): rex_yform_manager_collection
+    {
+        $now ??= new DateTimeImmutable();
+
+        return self::query()
+            ->where('status', 0)
+            ->whereRaw('`send_at` IS NOT NULL AND `send_at` NOT LIKE "0000-00-00%" AND `send_at` <= :now', ['now' => $now->format(rex_sql::FORMAT_DATETIME)])
+            ->orderBy('send_at')
+            ->find();
+    }
+
+    /**
+     * Versandtermin als "Y-m-d H:i:s" oder null. YForm speichert ein leeres datetime-Feld
+     * als "0000-00-00 00:00:00", das gilt hier als nicht gesetzt.
+     */
+    public function getSendAt(): ?string
+    {
+        return $this->readDatetime('send_at');
+    }
+
+    /** Termin gesetzt: Versand läuft über Konsole oder Cronjob, nicht über den Browser. */
+    public function isScheduled(): bool
+    {
+        return null !== $this->getSendAt();
+    }
+
+    /** Termin erreicht und Newsletter noch offen. Der Vergleich läuft in PHP, nicht in MySQL (Zeitzonen). */
+    public function isDue(?DateTimeInterface $now = null): bool
+    {
+        $sendAt = $this->getSendAt();
+        if (null === $sendAt || 1 == $this->getValue('status')) {
+            return false;
+        }
+        $now ??= new DateTimeImmutable();
+
+        return $sendAt <= $now->format(rex_sql::FORMAT_DATETIME);
+    }
+
+    /** Beginn des laufenden Versands (Sperre) oder null. */
+    public function getSendingStartedAt(): ?string
+    {
+        return $this->readDatetime('sending_started_at');
+    }
+
+    public function isLocked(): bool
+    {
+        return null !== $this->getSendingStartedAt();
+    }
+
+    /**
+     * Setzt die Versandsperre atomar: Das UPDATE greift nur, wenn noch keine Sperre steht,
+     * sodass von zwei parallelen Läufen genau einer gewinnt.
+     */
+    public function acquireSendLock(?DateTimeInterface $now = null): bool
+    {
+        $now = ($now ?? new DateTimeImmutable())->format(rex_sql::FORMAT_DATETIME);
+        $sql = rex_sql::factory();
+        $sql->setQuery(
+            'UPDATE `' . rex::getTable('ynewsletter') . '`
+                SET `sending_started_at` = :now
+              WHERE `id` = :id
+                AND (`sending_started_at` IS NULL OR `sending_started_at` LIKE "0000-00-00%")',
+            ['now' => $now, 'id' => $this->getId()],
+        );
+
+        if (1 !== $sql->getRows()) {
+            return false;
+        }
+        $this->setValue('sending_started_at', $now);
+
+        return true;
+    }
+
+    /** Hebt die Versandsperre auf, auch von der Versandseite aus für abgebrochene Läufe. */
+    public function releaseSendLock(): void
+    {
+        rex_sql::factory()->setQuery(
+            'UPDATE `' . rex::getTable('ynewsletter') . '` SET `sending_started_at` = NULL WHERE `id` = :id',
+            ['id' => $this->getId()],
+        );
+        $this->setValue('sending_started_at', null);
+    }
+
+    private function readDatetime(string $column): ?string
+    {
+        if (!$this->hasValue($column)) {
+            return null;
+        }
+        $value = trim((string) $this->getValue($column));
+        if ('' === $value || str_starts_with($value, '0000-00-00')) {
+            return null;
+        }
+
+        return $value;
     }
 
     public function send($users)

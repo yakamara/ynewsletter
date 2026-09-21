@@ -35,6 +35,9 @@ page:
             icon: rex-icon fa-info-circle
             itemclass: pull-right
 
+console_commands:
+    ynewsletter:send: rex_ynewsletter_command_send
+
 requires:
     packages:
         yform: '>=4.0,<6.0.0-dev'
