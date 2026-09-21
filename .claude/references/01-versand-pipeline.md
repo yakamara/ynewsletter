@@ -23,6 +23,7 @@ sendPackage(size)
  ├─ array_splice(users, 0, size)
  └─ send(users)
      ├─ leer?  → status = 1, save(), return true         ← „fertig"
+     ├─ getGroup() wirft rex_exception ohne zugeordnete Gruppe
      ├─ clang_id des Newsletters (Fallback: aktuelle) → rex_clang::setCurrentId(); self::$currentSending = $this
      ├─ try
      │   ├─ Body   = rex_article_content(article_id, clang_id)->getArticleTemplate()

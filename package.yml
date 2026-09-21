@@ -37,6 +37,7 @@ page:
 
 requires:
     packages:
+        yform: '>=4.0,<6.0.0-dev'
         yrewrite: '^2'
     redaxo: '^5.7'
 

@@ -9,8 +9,8 @@ Einstieg für die Arbeit **am AddOn selbst**. Fachliche Bedienung steht in `READ
   eingehängt in einen REDAXO-Core-Workspace, der `redaxo/src/addons/*` per `.gitignore` ausblendet.
   Commits, Tags und Releases laufen **hier**, nicht im Core-Repo.
 - Die Befehle aus der übergeordneten `redaxo/CLAUDE.md` (`composer check`, `phpstan`, `cs`) gelten
-  **nicht** für dieses AddOn: die Core-Konfiguration listet nur System-AddOns. Das AddOn hat kein
-  eigenes `composer.json`, keine Tests, keine CS-Konfiguration und keine CI.
+  **nicht** für dieses AddOn: die Core-Konfiguration listet nur System-AddOns. Das AddOn hat ein
+  eigenes `composer.json` mit `cs-fix`, `cs-dry` und `unit-test`, siehe „Prüfen" unten.
 - Lokale Instanz im Workspace: REDAXO 5.21, YForm 5.0.2, YRewrite 2.12.1, Sprog 1.4. Das AddOn
   ist dort **nicht installiert**; zum manuellen Testen im Backend installieren, eine Gruppe auf eine
   vorhandene YForm-Tabelle zeigen lassen und den Testversand nutzen.
@@ -19,12 +19,10 @@ Einstieg für die Arbeit **am AddOn selbst**. Fachliche Bedienung steht in `READ
 
 | Paket | Deklariert | Tatsächlich |
 |---|---|---|
-| yform | **nein** | Pflicht: alle vier Tabellen, Modelklassen, `data_edit.php`, Validator |
+| yform `>=4.0,<6.0.0-dev` | ja | alle vier Tabellen, Modelklassen, `data_edit.php`, Validator |
 | yrewrite `^2` | ja | nur für `rex_yrewrite::getCurrentDomain()` im Abmeldelink |
 | sprog | nein | optional: `{{ ynewsletter.unsubscribe }}` und README-Beispiele setzen es voraus |
 | phpmailer | (Core) | Versand über `rex_mailer` |
-
-Wer `requires` anfasst, sollte `yform` ergänzen; das fehlende Require ist historisch, kein Wunsch.
 
 ## Architektur in 30 Sekunden
 
@@ -80,7 +78,11 @@ Details: `.claude/references/01-versand-pipeline.md`, `02-datenmodell-und-instal
   Der URL-Pfad funktionierte bis 1.5.1 nur zufällig über das Arbeitsverzeichnis des Backends.
 - **Sprachdateien**: `de_de.lang` und `en_gb.lang` haben denselben Key-Satz. Neue Keys in beiden
   anlegen, die Reihenfolge der deutschen Datei beibehalten.
-- `pages/main.php` ist tot: keine Subpage verweist darauf. Einstieg ist `pages/index.php`.
+- **Dataset-Werte über `getValue()` lesen**, nicht über magische Properties (`$nl->subject`), und
+  die Gruppe über `getGroup()`. rexstan Level 5 kennt die magischen Properties nicht und meldet
+  sie als undefiniert; `getRelatedDataset()` liefert nur den Basistyp.
+- **Backend-Seiten** beginnen mit `/** @var rex_addon $this */`, sonst meldet rexstan `$this` als
+  undefiniert.
 - **Neue Newsletter-Spalten** in `send()` nur über `hasValue()` lesen: nach einem Git-Pull ohne
   Reinstall fehlt die Spalte, und `getValue()` läuft dann in einen undefinierten Array-Key.
 
@@ -95,14 +97,34 @@ Details: `.claude/references/01-versand-pipeline.md`, `02-datenmodell-und-instal
 - Code-Kommentare und Commit-Messages deutsch, wie der Bestand. Commit-Regeln aus der globalen
   `~/.claude/CLAUDE.md` gelten (keine KI-Marker, keine persönlichen Daten).
 
+## Prüfen
+
+```bash
+composer install          # einmalig, vendor/ ist gitignored
+composer cs-dry           # php-cs-fixer prüfen, cs-fix zum Anwenden
+composer unit-test        # PHPUnit; bootet die REDAXO-Instanz, in der das AddOn liegt
+```
+
+- Die Tests brauchen eine installierte Instanz mit YForm und dem installierten AddOn; der
+  Bootstrap `.tools/bootstrap.php` läuft fünf Ebenen über dem AddOn-Ordner los. Der
+  Ausschlusslisten-Test schreibt echte Datensätze und räumt sie im `tearDown` weg.
+- rexstan lokal: `.tools/rexstan.php` mit `ADDON_KEY=ynewsletter` aus dem Projektverzeichnis
+  ausführen, dann `bin/console rexstan:analyze`. Das überschreibt die rexstan-Konfiguration der
+  Instanz (`data/addons/rexstan/user-config.neon`), also vorher sichern.
+- CI (`.github/workflows/`): `code-style`, `phpunit` und `rexstan` laufen bei Push und PR gegen
+  das aktuelle REDAXO-Release mit PHP 8.3 (REDAXO 5.21 verlangt mindestens 8.3; die YCom-Workflows
+  mit 8.2 scheitern genau daran). `publish-to-redaxo` lädt ein veröffentlichtes GitHub-Release auf
+  redaxo.org und braucht die Secrets `MYREDAXO_USERNAME` und `MYREDAXO_API_KEY`.
+
 ## Release
 
 1. `version` in `package.yml` hochsetzen, `CHANGELOG.md` oben mit Datum ergänzen (deutsch,
    externe Beiträge namentlich nennen, wie bisher).
 2. Tag **ohne** `v`-Präfix (`1.5.1`), GitHub-Release mit dem Changelog-Block als Text.
-3. **Kein Release-Workflow im Repo.** Die Version muss auf redaxo.org von Hand hochgeladen werden;
-   dort liegt Stand 2026-09 die 1.5.1 online. Seit diesem Tag sind unveröffentlichte Fixes im
-   `master`, gesammelt im Block „Unveröffentlicht" der `CHANGELOG.md`.
+3. Das GitHub-Release stößt `publish-to-redaxo.yml` an, das die Version auf redaxo.org hochlädt und
+   den Release-Text als Beschreibung mitgibt (KI-Kennzeichnung gehört deshalb von Anfang an in den
+   Text). Auf redaxo.org liegt Stand 2026-09 die 1.5.1; alles danach steht im Block
+   „Unveröffentlicht" der `CHANGELOG.md`.
 
 ## Referenzen
 

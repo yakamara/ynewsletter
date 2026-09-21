@@ -16,6 +16,10 @@ Unveröffentlicht
 * Anhänge werden über den Dateisystempfad (`rex_path::media`) angehängt statt über den URL-Pfad; damit funktioniert der Versand mit Anhängen auch aus Cronjobs und Konsole
 * Englische Sprachdatei vervollständigt
 * YForm 4/5: Rechteabfrage der Datenseiten angepasst; Abmeldelink mit ungültigem Parameter erzeugt keinen Eintrag mehr (#52); E-Mail-Abgleich der Ausschlussliste ignoriert Groß-/Kleinschreibung (#60)
+* GitHub Actions: php-cs-fixer, PHPUnit und rexstan laufen bei Push und Pull Request, Releases werden automatisch auf redaxo.org veröffentlicht
+* Erste Unit-Tests (Preheader, Textfassung, Abmelde-Payload, Ausschlussliste), Code-Style über redaxo/php-cs-fixer-config, rexstan Level 5 ohne Befunde
+* `yform` als Abhängigkeit in `package.yml` deklariert
+* `rex_ynewsletter::getGroup()` liefert die Versandgruppe typisiert; ungenutzte Seite `pages/main.php` entfernt
 * README erweitert: Voraussetzungen, Gruppenfilter, Anhänge, Ablauf von Versand und Log, Rechte; Cronjob-Beispiel korrigiert (#26)
 * CLAUDE.md und Referenzdokumentation für die Weiterentwicklung ergänzt
 

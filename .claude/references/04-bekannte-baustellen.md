@@ -8,12 +8,10 @@ referenzieren.
 
 | Stelle | Befund |
 |---|---|
-| `package.yml` `requires` | `yform` fehlt, obwohl Pflicht. Installer meldet deshalb keine fehlende Abhängigkeit. |
 | `rex_ynewsletter::send()` | Fehlgeschlagene Mails (`status = 0`) werden geloggt und nie erneut versucht. |
 | `rex_ynewsletter_exclusionlist::initExclude()` | Läuft in jedem Request (auch Backend/Konsole); keine Bestätigung, kein Ablauf. |
-| `pages/main.php` | Nicht referenziert, kann entfallen. |
 | Kein `uninstall.php` | Tabellen bleiben nach Deinstallation stehen (siehe Referenz 02). |
-| Kein Tooling | Weder php-cs-fixer noch phpstan noch Tests; `declare(strict_types=1)` nur in `pages/data_edit.php`. |
+| `declare(strict_types=1)` | Nur in `pages/data_edit.php` und den Tests; der Altbestand läuft ohne. |
 
 ## Mit 1.6 erledigt (Issue nach Release schließen)
 
