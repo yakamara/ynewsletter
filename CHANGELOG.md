@@ -16,6 +16,7 @@ Unveröffentlicht
 * Anhänge werden über den Dateisystempfad (`rex_path::media`) angehängt statt über den URL-Pfad; damit funktioniert der Versand mit Anhängen auch aus Cronjobs und Konsole
 * Englische Sprachdatei vervollständigt
 * YForm 4/5: Rechteabfrage der Datenseiten angepasst; Abmeldelink mit ungültigem Parameter erzeugt keinen Eintrag mehr (#52); E-Mail-Abgleich der Ausschlussliste ignoriert Groß-/Kleinschreibung (#60)
+* README erweitert: Voraussetzungen, Gruppenfilter, Anhänge, Ablauf von Versand und Log, Rechte; Cronjob-Beispiel korrigiert (#26)
 * CLAUDE.md und Referenzdokumentation für die Weiterentwicklung ergänzt
 
 Version 1.5.1 – 15.03.2022

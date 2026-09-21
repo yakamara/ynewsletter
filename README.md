@@ -1,5 +1,15 @@
 # Newsletter für REDAXO 5.x
 
+Versendet REDAXO-Artikel als HTML-Newsletter an Empfänger aus beliebigen YForm-Tabellen. Der Versand wird protokolliert, Empfänger können sich über einen Link in eine Ausschlussliste eintragen.
+
+## Voraussetzungen
+
+* REDAXO 5.7 oder neuer
+* YForm 4 oder 5 (alle Tabellen des AddOns werden über YForm verwaltet)
+* YRewrite 2 (für die Domain im Abmeldelink)
+* optional Sprog für `{{ platzhalter }}` in Newsletter und Abmeldelink
+* Mailversand über das PHPMailer-AddOn (System > PHPMailer) muss eingerichtet sein
+
 ## Installation
 
 ### Ablauf
@@ -36,11 +46,22 @@ Folgende Felder erstellen:
 
 
 ### 3. in YNewsletter Gruppe erstellen
-In YNewsletter > Gruppe einen Datensatz anlegen, z.B. Name `Empfänger`, Tabelle `rex_ynewsletter_verteiler` und E-Mail Feld `email`
+In YNewsletter > Gruppe einen Datensatz anlegen, z.B. Name `Empfänger`, Tabelle `rex_ynewsletter_verteiler` und E-Mail Feld `email`.
+
+Im Feld `Filter` kann pro Zeile eine SQL-Bedingung stehen, die Zeilen werden mit `AND` verknüpft, z.B.
+
+```
+status = 1
+newsletter = 1
+```
+
+Die Bedingungen landen unverändert in der Abfrage; deshalb können nur Administratoren Gruppen anlegen und bearbeiten.
 
 
 ### 4. in YNewsletter Newsletter erstellen
-In YNewsletter > Newsletter einen Datensatz anlegen, z.B. Subject `Mein ersters Newsletter`, Absender eingeben (beispielsweise `meine_email@domain.de`), Absendername (beispielsweise `Maxima Musterfrau`), Article den Artikel angeben, der den Newsletter Inhalt abbildet, zuvor erstelle Gruppe angeben `Empfänger` und ggf. Sprache wählen (aus Redaxo System > Sprachen).
+In YNewsletter > Newsletter einen Datensatz anlegen, z.B. Subject `Mein erster Newsletter`, Absender eingeben (beispielsweise `meine_email@domain.de`), Absendername (beispielsweise `Maxima Musterfrau`), Article den Artikel angeben, der den Newsletter Inhalt abbildet, zuvor erstellte Gruppe angeben `Empfänger` und ggf. Sprache wählen (aus Redaxo System > Sprachen).
+
+Optional: ein `Preheader` (Kurztext für die Posteingangsvorschau, siehe unten) und `Anhänge` aus dem Medienpool, die jeder Mail beigefügt werden.
 
 
 ### 5. in Struktur Artikel erstellen
@@ -48,7 +69,7 @@ in Struktur Artikel für `Anmeldung` und `Anmeldung Bestätigen` erstellen, Beze
 
 
 ### 6. Artikel `Anmeldung Bestätigen` bearbeiten
-Block `YForm Formbuilder` hinzufügen. In der Eingabemaske folgenden Code einfügen und Platzhalter `%TABLE%` mit Tabellennamen `rex_ynewsletter_verteiler` ersetzen. Die Artikel ID dieses Artikels notieren. Falls der Block `YForm Formbuilder` fehlt, in YForm Übersicht über den enstprechenden Button nachinstallieren.
+Block `YForm Formbuilder` hinzufügen. In der Eingabemaske folgenden Code einfügen und Platzhalter `%TABLE%` mit Tabellennamen `rex_ynewsletter_verteiler` ersetzen. Die Artikel ID dieses Artikels notieren. Falls der Block `YForm Formbuilder` fehlt, in YForm Übersicht über den entsprechenden Button nachinstallieren.
 ```
 hidden|status|1
 hidden|newsletter|1
@@ -75,7 +96,7 @@ echo $url;
 
 
 ### 8. Artikel `Anmeldung` bearbeiten
-zurück in Struktur im Artikel `Anmeldung` Block `YForm Formbuilder` hinzufügen und folgenden Code einfügen. Die Platzhalter `%TABLE%` und `%EMAIL_TEMPLATE_KEY%` mit Tabellennamen `rex_ynewsletter_verteiler` und E-Mail-Template-Key `email_tmpl_ynewsletter_anmeldung`ersetzen.
+zurück in Struktur im Artikel `Anmeldung` Block `YForm Formbuilder` hinzufügen und folgenden Code einfügen. Die Platzhalter `%TABLE%` und `%EMAIL_TEMPLATE_KEY%` mit Tabellennamen `rex_ynewsletter_verteiler` und E-Mail-Template-Key `email_tmpl_ynewsletter_anmeldung` ersetzen.
 ```
 generate_key|activation_key
 hidden|status|0
@@ -97,38 +118,43 @@ action|tpl2email|%EMAIL_TEMPLATE_KEY%|email
 
 
 ### 9. Fertig!
-Nun kann man unter YNewsletter > Testversand oder unter YNewsletter > Versand ein Testversand respektive ein echter Versand ausgelöst werden. 
+Nun kann unter YNewsletter > Testversand oder unter YNewsletter > Versand ein Testversand respektive ein echter Versand ausgelöst werden. Wie der Versand im Detail abläuft, steht unten unter „Versand und Log".
 
 ***
 
 
 ### (Optional) 10. Versand über Cronjob
-Will man einen Versand über einen Cronjob automatisch starten, so kann man folgenden PHP Code verwenden:
+Will man einen Versand über einen Cronjob automatisch starten, so kann man folgenden PHP Code in einem Cronjob vom Typ „PHP-Code" verwenden:
 
-`Achtung - Jeder erstellte Newsletter wird dann direkt verschickt`
+`Achtung - Jeder Newsletter mit Status „offen" wird dann direkt verschickt`
 
-```
-<?php
-
-$nllog = '';
-$open_newsletters = self::query()->where('status', 0)->orderBy('id', 'desc')->find();
+```php
+$open_newsletters = rex_ynewsletter::query()->where('status', 0)->orderBy('id', 'desc')->find();
 
 if (0 == count($open_newsletters)) {
     echo 'keine Newsletter zu verschicken';
 } else {
-    foreach ($open_newsletters as $obj) {
-        $newsletter = self::get($obj->id);
+    foreach ($open_newsletters as $newsletter) {
         $newsletter->sendPackage(500);
-        echo $newsletter->ynewsletter_user_count.'verschickt an '.$newsletter->subject.' [id='.$newsletter->id.']'."\n";
+        echo $newsletter->ynewsletter_sent_count.' von '.$newsletter->ynewsletter_user_count.' verschickt: '.$newsletter->subject.' [id='.$newsletter->id.']'."\n";
     }
 }
-
-?>
 ```
+
+Pro Lauf wird je Newsletter ein Paket von 500 Mails verschickt. Der Status wechselt erst in dem Lauf auf „versendet", der keine offenen Empfänger mehr findet; der Cronjob muss also so lange laufen, bis kein offener Newsletter mehr da ist.
 
 
 
 ## Gut zu wissen
+
+### Versand und Log
+
+* **HTML-Fassung** ist der Artikel samt Template (`getArticleTemplate`), **Textfassung** der Artikelinhalt ohne Template und ohne HTML-Tags. Für beide werden die Platzhalter pro Empfänger ersetzt.
+* **Empfänger** sind alle Zeilen der Gruppentabelle, die den Filter erfüllen, abzüglich der Ausschlussliste und abzüglich der Empfänger, die für diesen Newsletter schon im **Log** stehen. Das Log ist damit der Versandfortschritt: Ein Empfänger bekommt den Newsletter genau einmal, auch wenn der Versand unterbrochen und später fortgesetzt wird.
+* **Paketversand**: Unter Versand kann man alle Mails auf einmal oder in Paketen von 10, 50 oder 100 Empfängern verschicken. Zwischen den Paketen lädt die Seite nach der eingestellten Verzögerung automatisch neu. Nach dem letzten Paket ist ein weiterer Durchlauf nötig, der keine Empfänger mehr findet und den Status auf „versendet" setzt.
+* **Fehlgeschlagene Mails** stehen mit Status `failed` im Log und werden nicht automatisch wiederholt. Für einen erneuten Versuch den Log-Eintrag löschen.
+* **Erneut versenden**: Ein Newsletter mit Status „versendet" erscheint nicht mehr unter Versand. Wer ihn erneut verschicken will, setzt den Status auf „offen" **und** löscht die Log-Einträge des Newsletters; sonst werden alle Empfänger als bereits versorgt übersprungen.
+* **Testversand** schickt den Newsletter an eine Zeile der Gruppentabelle (ID eingeben) und löscht den Log-Eintrag danach wieder, damit der Empfänger beim echten Versand nicht fehlt.
 
 ### Platzhalter die angepasst werden müssen
 
@@ -149,27 +175,29 @@ REX_YNEWSLETTER_DATA[field="name" ifempty="Sehr geehrte Damen und Herren"]
 
 ### Rechte
 
-* Da die Tabellen über die YForm verwaltet werden, muss man hierrüber an die User Tabellenrechte geben.
-* Nur ein Admin kann die Gruppen anlegen
+* Das Recht `ynewsletter[]` schaltet das AddOn im Backend frei.
+* Da die Tabellen über YForm verwaltet werden, brauchen Nicht-Admins zusätzlich die YForm-Tabellenrechte für `rex_ynewsletter`, `rex_ynewsletter_exclusionlist` und `rex_ynewsletter_log`. Fehlt ein Recht, zeigt die Seite einen entsprechenden Hinweis.
+* Nur ein Admin kann Gruppen anlegen und bearbeiten, weil dort SQL-Bedingungen eingetragen werden.
 
 
 ### Ausschlussliste
 
-* Diese Liste kann mit E-Mails befüllt werden, welche beim Versand explicit ausgenommen werden
-* Wenn ein User keiner Versandgruppe zugordnet ist, wird der Versand an diese E-Mail immer unterbunden.
+* Diese Liste kann mit E-Mail-Adressen befüllt werden, die beim Versand ausgenommen werden. Der Abgleich ignoriert Groß- und Kleinschreibung.
+* Ein Eintrag mit Gruppe gilt nur für diese Gruppe. Ein Eintrag **ohne** Gruppe gilt für alle Gruppen.
+* Die Adressen bleiben stehen, damit nachvollziehbar ist, wer sich wann abgemeldet hat. Soll der Datensatz in der Empfängertabelle gelöscht werden, muss das projektseitig geschehen, z.B. über den Extension Point `YNEWSLETTER_MAIL_SENT` oder einen Cronjob.
 
 
 ### Integrierte Abmeldung (Eintrag in die Ausschlussliste)
 
-Die Ausschlussliste ermöglich ein Abmelden eines Empfänger ohne in der Originaltabelle Eintragungen zu machen. Dabei wird über REX_VARs ein Abmeldenlink erstellt und die ArtikelID angegeben, welchen nach der Abmeldung aufgerufen wird. ("Danke" für die Abmeldung).
+Die Ausschlussliste ermöglicht das Abmelden eines Empfängers, ohne in der Originaltabelle etwas zu ändern. Dabei wird über eine REX_VAR ein Abmeldelink erstellt und die Artikel-ID angegeben, die nach der Abmeldung aufgerufen wird („Danke" für die Abmeldung). Der Link enthält E-Mail und Gruppen verschlüsselt; wer den Link hat, kann die Adresse abmelden.
 
-Folgender REX_VAR wird dafür verwenden, welcher einfach in das Newsletter Template oder Modul eingesetzt wird
+Folgende REX_VAR wird dafür verwendet, sie wird einfach in das Newsletter-Template oder Modul eingesetzt:
 
 #### Beispiel 1
 ```
 REX_YNEWSLETTER_UNSUBSCRIBE[groups="" redirectToID=3 output=url]
 ``` 
-Es wird ein individueller Link erstellt welcher für Abmeldung des aktuellen Users sorge und auf die ArtikelID 3 verweist. Es wird ausschliesslich die URL ausgegeben.
+Es wird ein individueller Link erstellt, der den aktuellen Empfänger aus **allen** Gruppen abmeldet (leere Gruppenangabe) und auf den Artikel mit der ID 3 verweist. Es wird ausschließlich die URL ausgegeben.
 
 
 #### Beispiel 2
@@ -178,7 +206,7 @@ Es wird ein individueller Link erstellt welcher für Abmeldung des aktuellen Use
 REX_YNEWSLETTER_UNSUBSCRIBE[groups=1,3,2 redirectToID=4 output=html]
 ``` 
 
-Es wird der komplette A Tag erstellt mit dem Link, welcher den User aus den Gruppen 1,2 und 3 abmelden und anschliessend auf den Artikel mit der ID weiterleitet.  
+Es wird der komplette `<a>`-Tag erstellt mit dem Link, der den Empfänger aus den Gruppen 1, 2 und 3 abmeldet und anschließend auf den Artikel mit der ID 4 weiterleitet.
 
 
 #### Beispiel 3 (normalerweise diesen hier nutzen)
@@ -186,7 +214,7 @@ Es wird der komplette A Tag erstellt mit dem Link, welcher den User aus den Grup
 ```
 REX_YNEWSLETTER_UNSUBSCRIBE[redirectToID=3 output=url]
 ``` 
-Es wird ein Abmeldelink erstellt mit dem aktuellen User und der aktuellen Gruppe.
+Es wird ein Abmeldelink für den aktuellen Empfänger und die Gruppe des gerade versendeten Newsletters erstellt.
 
 #### Beispiel 4 (Weiterleitung auf eine beliebige URL)
 
