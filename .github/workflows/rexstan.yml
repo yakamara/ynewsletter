@@ -1,0 +1,77 @@
+name: rexstan
+
+on:
+    push:
+        branches: [ master, main ]
+    pull_request:
+        branches: [ master, main ]
+
+permissions:
+    contents: read
+
+jobs:
+    rexstan:
+        env:
+            ADDON_KEY: ${{ github.event.repository.name }}
+
+        runs-on: ubuntu-latest
+
+        steps:
+            -   uses: actions/checkout@v4
+
+# setup PHP (REDAXO 5.21 needs PHP >= 8.3)
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: '8.3'
+                    extensions: gd, intl, pdo_mysql
+                    coverage: none
+
+            # download the latest REDAXO release and unzip it
+            -   name: Download latest REDAXO release
+                run: |
+                    REDAXO_VERSION=$(curl -Ls -H 'Accept: application/vnd.github+json' https://api.github.com/repos/redaxo/redaxo/releases/latest | jq -r '.tag_name')
+                    echo "Downloading REDAXO $REDAXO_VERSION"
+                    curl -Ls -o redaxo.zip "https://github.com/redaxo/redaxo/releases/download/$REDAXO_VERSION/redaxo_$REDAXO_VERSION.zip"
+                    unzip -oq redaxo.zip -d redaxo_cms
+                    rm redaxo.zip
+
+            # start mysql service and create the database
+            -   name: Init database
+                run: |
+                    sudo /etc/init.d/mysql start
+                    mysql -uroot -h127.0.0.1 -proot -e 'create database redaxo5;'
+
+            # run REDAXO setup (throw_always_exception turns notices into failures)
+            -   name: Setup REDAXO
+                run: |
+                    php redaxo_cms/redaxo/bin/console setup:run -n --lang=de_de --agree-license --db-host=127.0.0.1 --db-name=redaxo5 --db-password=root --db-createdb=no --db-setup=normal --admin-username=admin --admin-password=adminpassword --error-email=test@redaxo.invalid --ansi
+                    php redaxo_cms/redaxo/bin/console config:set --type boolean debug.enabled true
+                    php redaxo_cms/redaxo/bin/console config:set --type boolean debug.throw_always_exception true
+
+            # copy the addon into the instance and install it together with its dependencies
+            -   name: Copy and install AddOns
+                run: |
+                    rsync -a --exclude='vendor' --exclude='.github' --exclude='.git' --exclude='redaxo_cms' './' 'redaxo_cms/redaxo/src/addons/${{ github.event.repository.name }}'
+                    redaxo_cms/redaxo/bin/console package:install 'phpmailer'
+                    redaxo_cms/redaxo/bin/console install:download 'yform' '5.*'
+                    redaxo_cms/redaxo/bin/console package:install 'yform'
+                    redaxo_cms/redaxo/bin/console install:download 'yrewrite' '2.*'
+                    redaxo_cms/redaxo/bin/console package:install 'yrewrite'
+                    redaxo_cms/redaxo/bin/console install:download 'sprog' '1.*'
+                    redaxo_cms/redaxo/bin/console package:install 'sprog'
+                    redaxo_cms/redaxo/bin/console package:install '${{ github.event.repository.name }}'
+                    redaxo_cms/redaxo/bin/console install:download 'rexstan' '3.*'
+                    redaxo_cms/redaxo/bin/console package:install 'rexstan'
+
+            -   name: Install test dependencies
+                working-directory: redaxo_cms/redaxo/src/addons/${{ github.event.repository.name }}
+                run: composer install --prefer-dist --no-progress
+
+            # write the rexstan user config (level, paths, extensions) for this addon
+            -   name: Write rexstan config
+                working-directory: redaxo_cms
+                run: php -f redaxo/src/addons/${{ github.event.repository.name }}/.tools/rexstan.php
+
+            -   name: Run rexstan
+                run: redaxo_cms/redaxo/bin/console rexstan:analyze

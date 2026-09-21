@@ -1,0 +1,29 @@
+name: PHP-CS-Fixer
+
+on:
+    push:
+        branches: [ master, main ]
+    pull_request:
+        branches: [ master, main ]
+
+permissions:
+    contents: read
+
+jobs:
+    code-style:
+        runs-on: ubuntu-latest
+
+        steps:
+            -   uses: actions/checkout@v4
+
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: '8.3'
+                    coverage: none
+
+            -   name: Install dependencies
+                uses: ramsey/composer-install@v3
+
+            -   name: Run PHP CS Fixer (dry run)
+                run: composer cs-dry

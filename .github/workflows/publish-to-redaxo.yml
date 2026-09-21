@@ -1,0 +1,28 @@
+name: Publish release
+
+on:
+    release:
+        types:
+            - published
+
+jobs:
+    redaxo_publish:
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v4
+
+            -   uses: shivammathur/setup-php@v2
+                with:
+                    php-version: '8.3'
+
+            # the addon has no runtime dependencies; --no-dev keeps dev tools out of the release
+            -   uses: ramsey/composer-install@v3
+                with:
+                    composer-options: "--no-dev"
+
+            # needs the secrets MYREDAXO_USERNAME and MYREDAXO_API_KEY in the repository settings
+            -   uses: FriendsOfREDAXO/installer-action@v1
+                with:
+                    myredaxo-username: ${{ secrets.MYREDAXO_USERNAME }}
+                    myredaxo-api-key: ${{ secrets.MYREDAXO_API_KEY }}
+                    description: ${{ github.event.release.body }}
