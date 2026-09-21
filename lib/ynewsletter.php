@@ -61,7 +61,7 @@ class rex_ynewsletter extends \rex_yform_manager_dataset
 
             $mail = new rex_mailer();
             foreach ($mediaList as $media) {
-                $mail->addAttachment(rex_url::media($media->getFileName()), $media->getOriginalFileName());
+                $mail->addAttachment(rex_path::media($media->getFileName()), $media->getOriginalFileName());
             }
 
             $mail->AddAddress($email);
