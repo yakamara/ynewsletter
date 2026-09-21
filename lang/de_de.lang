@@ -100,3 +100,5 @@ ynewsletter_cronjob_package_size_notice = E-Mails pro Paket, 0 = alle auf einmal
 ynewsletter_console_nothing_due = Keine fälligen Newsletter.
 ynewsletter_console_locked = Newsletter [id={0}] übersprungen, Versand läuft bereits seit {1}.
 ynewsletter_console_sent = Newsletter [id={0}] "{1}": {2} von {3} E-Mails versendet, Status: {4}.
+ynewsletter_cronjob_missing = Das Cronjob-AddOn ist nicht aktiv. Newsletter mit Versandtermin werden deshalb nur verschickt, wenn <code>bin/console ynewsletter:send</code> regelmäßig über einen System-Cron läuft.
+ynewsletter_scheduled_info_console_only = Diese Newsletter werden über <code>bin/console ynewsletter:send</code> verschickt. Für einen manuellen Versand den Versandtermin im Newsletter entfernen.

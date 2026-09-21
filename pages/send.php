@@ -165,6 +165,13 @@ if (0 == count($manual_newsletters)) {
     echo $content;
 }
 
+$cronjobAvailable = rex_addon::get('cronjob')->isAvailable();
+
+// Ohne Cronjob-AddOn bleibt für terminierte Newsletter nur die Konsole; das soll hier sichtbar sein
+if (!$cronjobAvailable && 0 == count($scheduled_newsletters)) {
+    echo rex_view::info(rex_i18n::msg('ynewsletter_cronjob_missing'));
+}
+
 // Übersicht der terminierten und gerade laufenden Versände, inkl. Aufheben hängender Sperren
 if (count($scheduled_newsletters) > 0) {
     $rows = '';
@@ -199,9 +206,15 @@ if (count($scheduled_newsletters) > 0) {
         . '<tbody>' . $rows . '</tbody>'
         . '</table>';
 
+    if ($cronjobAvailable) {
+        $info = '<p>' . rex_i18n::msg('ynewsletter_scheduled_info', rex_i18n::msg('ynewsletter_cronjob_send')) . '</p>';
+    } else {
+        $info = rex_view::warning(rex_i18n::msg('ynewsletter_cronjob_missing')) . '<p>' . rex_i18n::msg('ynewsletter_scheduled_info_console_only') . '</p>';
+    }
+
     $fragment = new rex_fragment();
     $fragment->setVar('title', rex_i18n::msg('ynewsletter_scheduled'), false);
-    $fragment->setVar('body', '<p>' . rex_i18n::msg('ynewsletter_scheduled_info', rex_i18n::msg('ynewsletter_cronjob_send')) . '</p>' . $table, false);
+    $fragment->setVar('body', $info . $table, false);
     echo $fragment->parse('core/page/section.php');
 }
 

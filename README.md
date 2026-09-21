@@ -8,6 +8,7 @@ Versendet REDAXO-Artikel als HTML-Newsletter an Empfänger aus beliebigen YForm-
 * YForm 4 oder 5 (alle Tabellen des AddOns werden über YForm verwaltet)
 * YRewrite 2 (für die Domain im Abmeldelink)
 * optional Sprog für `{{ platzhalter }}` in Newsletter und Abmeldelink
+* optional Cronjob-AddOn für den terminierten Versand ohne System-Cron (siehe Schritt 10); ohne das AddOn läuft der terminierte Versand ausschließlich über `bin/console ynewsletter:send`
 * Mailversand über das PHPMailer-AddOn (System > PHPMailer) muss eingerichtet sein
 
 ## Installation

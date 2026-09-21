@@ -100,3 +100,5 @@ ynewsletter_cronjob_package_size_notice = E-mails per package, 0 = all at once
 ynewsletter_console_nothing_due = No newsletters due.
 ynewsletter_console_locked = Newsletter [id={0}] skipped, sending already running since {1}.
 ynewsletter_console_sent = Newsletter [id={0}] "{1}": {2} of {3} e-mails sent, status: {4}.
+ynewsletter_cronjob_missing = The cronjob addon is not active. Newsletters with a scheduled date are therefore only sent if <code>bin/console ynewsletter:send</code> runs regularly via a system cron.
+ynewsletter_scheduled_info_console_only = These newsletters are sent via <code>bin/console ynewsletter:send</code>. To send manually, remove the scheduled date in the newsletter.
