@@ -33,9 +33,12 @@ Wer `requires` anfasst, sollte `yform` ergänzen; das fehlende Require ist histo
   `boot.php` per `setModelClass` gebunden; die Backend-Seiten dazu sind `package.yml`-Subpages mit
   `yformTable`, gerendert über das generische `pages/data_edit.php`.
 - **Versand** (`rex_ynewsletter::sendPackage`): Empfänger = Gruppe (`SELECT * FROM <table> WHERE <filter>`)
-  minus Ausschlussliste minus bereits im Log stehende IDs. Pro Empfänger werden Subject, Artikel-HTML
-  (`getArticleTemplate`) und Textfassung (`getArticle`, stripped) durch `rex_var::parse` im Kontext
-  `ynewsletter_template` gejagt und dann per `rex_mailer` verschickt. Jede Mail landet im Log.
+  minus Ausschlussliste minus bereits im Log stehende IDs. Pro Empfänger werden Subject, Preheader,
+  Artikel-HTML (`getArticleTemplate`) und Textfassung (`getArticle`, stripped) durch `rex_var::parse`
+  im Kontext `ynewsletter_template` gejagt, danach durch Sprog (falls installiert), dann per
+  `rex_mailer` verschickt. Während `send()` ist die Newsletter-Sprache die aktuelle Sprache und
+  `rex_ynewsletter::isSending()` true. Zwei EPs: `YNEWSLETTER_MAIL_BEFORE_SEND` (Subject
+  `rex_mailer`) und `YNEWSLETTER_MAIL_SENT`. Jede Mail landet im Log.
 - **Paketversand im Backend** ist ein GET-Formular plus JavaScript-Reload nach `send_delay` Sekunden.
   Es gibt keinen serverseitigen Scheduler; der Cronjob-Weg ist ein Snippet in der README.
 - **Abmeldung**: `REX_YNEWSLETTER_UNSUBSCRIBE` baut eine URL mit AES-verschlüsseltem Payload
@@ -78,6 +81,8 @@ Details: `.claude/references/01-versand-pipeline.md`, `02-datenmodell-und-instal
 - **Sprachdateien**: `de_de.lang` und `en_gb.lang` haben denselben Key-Satz. Neue Keys in beiden
   anlegen, die Reihenfolge der deutschen Datei beibehalten.
 - `pages/main.php` ist tot: keine Subpage verweist darauf. Einstieg ist `pages/index.php`.
+- **Neue Newsletter-Spalten** in `send()` nur über `hasValue()` lesen: nach einem Git-Pull ohne
+  Reinstall fehlt die Spalte, und `getValue()` läuft dann in einen undefinierten Array-Key.
 
 ## Konventionen
 

@@ -12,38 +12,36 @@ referenzieren.
 | `rex_ynewsletter::send()` | Fehlgeschlagene Mails (`status = 0`) werden geloggt und nie erneut versucht. |
 | `rex_ynewsletter_exclusionlist::initExclude()` | Läuft in jedem Request (auch Backend/Konsole); keine Bestätigung, kein Ablauf. |
 | `pages/main.php` | Nicht referenziert, kann entfallen. |
-| `pages/send_test.php` | Eingabefeld hat `type="test"` statt `type="text"` bzw. `number`; Label-`for` zeigt auf nicht vorhandene ID. |
 | Kein `uninstall.php` | Tabellen bleiben nach Deinstallation stehen (siehe Referenz 02). |
 | Kein Tooling | Weder php-cs-fixer noch phpstan noch Tests; `declare(strict_types=1)` nur in `pages/data_edit.php`. |
+
+## Mit 1.6 erledigt (Issue nach Release schließen)
+
+#34 hidden-Flag, #38 Sprog beim Versand, #39 Extension Points, #41 Preheader, #44 `isSending()`,
+#48 Rechte-Hinweis, #58 Sprache beim Versand, #32 `redirectTo`. #49 und #55 waren im Code seit
+2022 gefixt und brauchen nur das Release. #45 (README) und #53 (DSGVO-Frage) sind beantwortet.
 
 ## Offene Issues, geclustert
 
 **Versand-Logik**
-- #57 Versendete Newsletter nicht erneut nutzbar (Status/Log zurücksetzen fehlt)
-- #59 User in mehreren Gruppen bekommt Mehrfachzustellung
-- #58 Mehrsprachigkeit nur über getrennte Newsletter
+- #57 Versendete Newsletter nicht erneut nutzbar (Status/Log zurücksetzen fehlt); Vorschlag:
+  Hinweis mit Logzahl auf der Versandseite plus Button „Log leeren und erneut versenden"
+- #59 User in mehreren Gruppen bekommt Mehrfachzustellung oder wird nicht gefunden; Rückfrage nötig
 - #37 Versandplaner / zeitgesteuerter Versand
-- #39 Extension Point vor dem Versand
-- #36 Mailjet-Anbindung
-- #41 Preheader
+- #36 Mailjet-Anbindung (Bounces in die Ausschlussliste); über `YNEWSLETTER_MAIL_BEFORE_SEND`
+  projektseitig machbar
+- #33 „Tabelle wurde nicht gefunden" nach Update 1.4 → 1.5; seit `update.php` vermutlich erledigt,
+  Bestätigung fehlt
 
 **Backend-Bedienung**
-- #40 Testversand: Testuser per Widget statt ID-Eingabe
+- #40 Testversand: Testuser per Widget oder E-Mail statt ID-Eingabe
 - #35 Vorschau mit Userdaten
-- #48 Fehlerbild ohne YForm-Tabellenrecht
-- #34 Ausschlussliste erscheint im YForm-Hauptmenü
-- #33 „Tabelle wurde nicht gefunden" bei Ausschlussliste (Install-/Cache-Thema)
 
-**REX_VARs und Abmeldung**
-- #43 / #44 `REX_YNEWSLETTER_DATA` verhält sich anders als `REX_YFORM_DATA` (Array statt Dataset, Kontext)
-- #38 `{{ ynewsletter.unsubscribe }}` wird ohne Sprog nicht ersetzt
-- #32 Abmeldung über echte, lesbare URL
-- #53 Ausschlussliste und DSGVO (Klartext-E-Mail wird gespeichert)
+**REX_VARs**
+- #43 `REX_YNEWSLETTER_DATA` kennt kein `_LABELS`-Suffix (User ist Array, kein Dataset)
 
-**Doku und Release**
-- #26, #45 README ausbauen (Schritt-für-Schritt ist inzwischen drin)
-- #55 Aktuelle Version nicht im Installer (Release-Upload auf redaxo.org ist manuell)
-- #49 Fehler mit neuer YForm-Version (prüfen, ob durch YForm-4/5-Anpassungen erledigt)
+**Doku**
+- #26 README um Text/HTML-Fassung und Paketversand erweitern
 
 ## Nicht anfassen ohne Entscheidung
 

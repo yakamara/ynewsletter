@@ -7,6 +7,7 @@
 |---|---|---|
 | status | choice | `0` offen, `1` versendet (Labels über `translate:`-Keys) |
 | subject | text | darf REX_YNEWSLETTER_DATA enthalten |
+| preheader | text | optional; unsichtbar nach `<body>` eingefügt, Platzhalter erlaubt; in `send()` per `hasValue()` gelesen |
 | email_from, email_from_name | email, text | Absender |
 | article_id | be_link | Artikel, der den Newsletter bildet |
 | group | be_manager_relation → `rex_ynewsletter_group.name` | Empfängergruppe |
@@ -32,6 +33,9 @@ Validierungen: `empty` auf subject, article_id, email_from, group; `email` auf e
 | group | be_manager_relation → group (empty_option) | leer = gilt für **alle** Gruppen |
 
 `getByGroupId()` liefert Einträge mit `group = <id>` **oder** `group = ''`, gruppiert nach E-Mail.
+
+Alle vier Tabellen stehen im Tableset auf `hidden: "1"` und erscheinen deshalb nicht im
+YForm-Hauptmenü (Issue #34).
 
 ### `rex_ynewsletter_log` → `rex_ynewsletter_log`
 | Feld | Typ | Bemerkung |
@@ -78,8 +82,6 @@ require __DIR__ . '/install.php';
 - Datenseiten (`newsletter`, `group`, `exclusionlist`, `log`) sind Subpages mit `yformTable`;
   `pages/data_edit.php` liest diese Property und rendert `rex_yform_manager`. Es prüft zusätzlich
   YForm-Tabellenrechte (`rex_yform_manager_table_authorization::onAttribute('EDIT', …)`) oder
-  Admin. **Ohne YForm-Tabellenrecht sieht ein Nicht-Admin eine leere Seite ohne Hinweis**
-  (Issue #48 meldet ein „Oops" für ältere Stände).
-- Die Tabellen erscheinen zusätzlich im YForm-Table-Manager, falls sie dort nicht auf „hidden"
-  stehen (Issue #34).
+  Admin. Ohne YForm-Tabellenrecht sieht ein Nicht-Admin eine Warnung mit dem Tabellennamen
+  (Issue #48).
 - `pjax: false` in `package.yml`, weil `send.php` per `location.reload()` arbeitet.

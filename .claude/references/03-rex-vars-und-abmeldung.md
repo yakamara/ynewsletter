@@ -15,6 +15,9 @@ REX_YNEWSLETTER_DATA[field="name" isset=1]          → 'true' | 'false'
   Relationen oder YForm-Feldlogik. Das ist der Unterschied zu `REX_YFORM_DATA` (Issue #43/#44).
 - `output="html"` → `htmlspecialchars` + `nl2br`; `output="plain"` entschärft nur `<?`/`?>`;
   ohne `output` kommt der Rohwert. In Modulen deshalb `output="html"` verwenden (README).
+- Für den normalen Seitenaufruf gibt es keinen Fallback in der Var selbst (die Var muss literal
+  bleiben). Templates nutzen `rex_ynewsletter::isSending()` und geben sonst einen Standardtext aus
+  (Issue #44).
 - `prefix`, `suffix`, `ifempty` kommen aus `rex_var::getGlobalArgsOutput()`, nicht aus dieser Klasse.
 
 ## REX_YNEWSLETTER_UNSUBSCRIBE (`lib/var/ynewsletter_unsubscribe.php`)
@@ -23,12 +26,14 @@ REX_YNEWSLETTER_DATA[field="name" isset=1]          → 'true' | 'false'
 REX_YNEWSLETTER_UNSUBSCRIBE[redirectToID=3 output=url]                 aktuelle Gruppe
 REX_YNEWSLETTER_UNSUBSCRIBE[groups=1,3 redirectToID=4 output=html]     mehrere Gruppen, kompletter <a>
 REX_YNEWSLETTER_UNSUBSCRIBE[groups="" redirectToID=3 output=url]       Gruppe leer = alle Gruppen
+REX_YNEWSLETTER_UNSUBSCRIBE[redirectTo="https://example.org/bye" output=url]   absolute URL statt Artikel (#32)
 ```
 
 - `groups` fehlt → ID der aktuellen Gruppe. `groups=""` (Attribut vorhanden, aber leer) → leerer
   String, also Eintrag ohne Gruppe = globaler Ausschluss. Diese Unterscheidung läuft über
   `hasArg('groups')`.
-- `redirectToID` fehlt → Startartikel der aktuellen YRewrite-Domain.
+- `redirectToID` fehlt → Startartikel der aktuellen YRewrite-Domain. `redirectTo` (absolute URL)
+  gewinnt gegenüber `redirectToID`; fehlt beides, gibt die Var eine Fehlermeldung als Text aus.
 - `output=html` gibt `<a href="…">{{ ynewsletter.unsubscribe }}</a>` aus; der Linktext ist ein
   **Sprog-Platzhalter**. Ohne Sprog oder ohne den Sprog-Key steht er wörtlich in der Mail
   (Issue #38).
@@ -36,15 +41,20 @@ REX_YNEWSLETTER_UNSUBSCRIBE[groups="" redirectToID=3 output=url]       Gruppe le
 ## Abmeldung serverseitig (`lib/ynewsletter_exclusionlist.php`)
 
 ```
-getUnsubscribeUrl(email, groups, redirectToID)
-  payload = serialize(['email'=>…, 'groups'=>…, 'redirectToID'=>…])
+getUnsubscribeUrl(email, groups, redirectToID, redirectTo = '')
+  payload = serialize(['email'=>…, 'groups'=>…, 'redirectToID'=>…, 'redirectTo'=>…])
   token   = openssl_encrypt(payload, 'AES-128-ECB', encryption_key)     // Base64-Ausgabe
   url     = <YRewrite-Domain-URL>?rex_ynewsletter_unsubscribe=<urlencode(token)>
 
 initExclude()   (boot.php, EP PACKAGES_INCLUDED, jeder Request)
   token vorhanden? → decryptString → unserialize
-  ist Array? → excludeEMail(email, groups) → rex_response::sendRedirect(rex_getUrl(redirectToID))
+  ist Array? → excludeEMail(email, groups)
+             → redirectTo gesetzt? sendRedirect(redirectTo) : sendRedirect(rex_getUrl(redirectToID))
 ```
+
+- Links aus Versionen vor 1.6 haben kein `redirectTo` im Payload; `empty()` fängt das ab.
+- `redirectTo` ist kein Open Redirect: Der Payload ist mit dem Server-Schlüssel verschlüsselt,
+  Angreifer können keine eigene URL hineinschreiben.
 
 - `excludeEMail()` splittet `groups` an Kommas und legt **je Gruppe einen Eintrag** an; bei
   leerem String genau einen Eintrag ohne Gruppe.

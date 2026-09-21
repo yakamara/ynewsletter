@@ -23,15 +23,24 @@ sendPackage(size)
  ├─ array_splice(users, 0, size)
  └─ send(users)
      ├─ leer?  → status = 1, save(), return true         ← „fertig"
-     ├─ Body   = rex_article_content(article_id, clang_id)->getArticleTemplate()
-     ├─ AltBody= getArticle() → strip_tags → html_entity_decode → optimizeTextBody()
-     ├─ Anhänge aus `attachments` (kommagetrennte Medien-Dateinamen)
-     └─ pro User:
-          rex_var::parse(Subject|AltBody|Body, ENV_OUTPUT, 'ynewsletter_template', ['user'=>row,'group'=>group])
-          → rex_stream('ynewsletter/plain_content', …) → rex_file::getOutput()   (führt eingebettetes PHP aus)
-          rex_mailer: From, FromName, AddAddress, Subject, Body, AltBody, Attachments
-          Log-Eintrag: user_id, newsletter, email, status (1 ok / 0 failed)
-          ++ynewsletter_sent_count
+     ├─ clang_id des Newsletters (Fallback: aktuelle) → rex_clang::setCurrentId(); self::$currentSending = $this
+     ├─ try
+     │   ├─ Body   = rex_article_content(article_id, clang_id)->getArticleTemplate()
+     │   ├─ AltBody= getArticle() → strip_tags → html_entity_decode → optimizeTextBody()
+     │   ├─ Anhänge aus `attachments` (kommagetrennte Medien-Dateinamen, rex_path::media)
+     │   └─ pro User:
+     │        parseContent(Subject|AltBody|Body|Preheader):
+     │          rex_var::parse(…, ENV_OUTPUT, 'ynewsletter_template', ['user'=>row,'group'=>group])
+     │          → rex_stream('ynewsletter/plain_content', …) → rex_file::getOutput()   (führt eingebettetes PHP aus)
+     │          → \Sprog\Wildcard::parse(…, clang_id)  falls Klasse existiert
+     │        Preheader → injectPreheader(): unsichtbarer div direkt nach <body …>
+     │        rex_mailer: From, FromName, AddAddress, Subject, Body, AltBody, Attachments
+     │        EP YNEWSLETTER_MAIL_BEFORE_SEND (Subject rex_mailer; kein rex_mailer zurück → nicht senden, status 0)
+     │        Send() → status 1/0
+     │        EP YNEWSLETTER_MAIL_SENT (Subject status, Param mail)
+     │        Log-Eintrag: user_id, newsletter, email, status (1 ok / 0 failed)
+     │        ++ynewsletter_sent_count
+     └─ finally: $currentSending = null, vorherige clang_id wiederherstellen
      return false                                          ← „Paket raus, weiter reloaden"
 ```
 
@@ -56,8 +65,12 @@ sendPackage(size)
   Filtern (Issue #58).
 - **Verzögerung** (`send_delay`) ist reines JavaScript im Backend (`setTimeout` vor
   `location.reload()`). Serverseitig wird nicht gewartet; `sleep()` gehört nicht in `send()`.
-- **Kein Extension Point** vor oder nach dem Mailversand (Issue #39). Wer Preheader, Tracking oder
-  ESP-Anbindung (Issue #36) will, braucht einen EP um `rex_mailer->Send()`.
+- **Extension Points**: `YNEWSLETTER_MAIL_BEFORE_SEND` darf die Mail verändern oder durch Rückgabe
+  von etwas anderem als `rex_mailer` unterdrücken. Unterdrückte Mails werden mit `status = 0` geloggt,
+  sonst würde `sendPackage()` denselben Block endlos neu laden. ESP-Anbindungen (Issue #36) setzen
+  hier an.
+- **Sprog** wird nur ersetzt, wenn `\Sprog\Wildcard` autoloadbar ist, also das AddOn verfügbar ist.
+  Die Ersetzung läuft nach dem PHP-Stream, damit auch in Modulen erzeugte Platzhalter greifen.
 
 ## Gruppen-Query
 
@@ -73,6 +86,6 @@ echten `rex_console_command` beachten:
 
 - `getArticleTemplate()` braucht eine Frontend-Umgebung (Template-Include, `rex_article`-Kontext).
   Im Backend funktioniert es, in der Konsole ist `rex::isFrontend()` false und einige Templates
-  greifen auf `rex_article::getCurrent()` zu.
+  greifen auf `rex_article::getCurrent()` zu. Die Sprache setzt `send()` selbst.
 - Der Abmeldelink braucht `rex_yrewrite::getCurrentDomain()`, das in der Konsole die Default-
   Domain liefert.
