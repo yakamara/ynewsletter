@@ -138,8 +138,8 @@ composer unit-test        # PHPUnit; bootet die REDAXO-Instanz, in der das AddOn
 2. Tag **ohne** `v`-Präfix (`1.5.1`), GitHub-Release mit dem Changelog-Block als Text.
 3. Das GitHub-Release stößt `publish-to-redaxo.yml` an, das die Version auf redaxo.org hochlädt und
    den Release-Text als Beschreibung mitgibt (KI-Kennzeichnung gehört deshalb von Anfang an in den
-   Text). Auf redaxo.org liegt Stand 2026-09 die 1.5.1; alles danach steht im Block
-   „Unveröffentlicht" der `CHANGELOG.md`.
+   Text). Neue Änderungen bis zum nächsten Release in einem Block „Unveröffentlicht" oben in
+   der `CHANGELOG.md` sammeln und beim Release durch Version und Datum ersetzen.
 
 ## Referenzen
 
