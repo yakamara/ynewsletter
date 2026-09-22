@@ -1,8 +1,8 @@
 Changelog
 =========
 
-Unveröffentlicht
-----------------
+Version 1.6.0 – 22.09.2026
+--------------------------
 
 * Versandplanung: Feld „Versandtermin" mit Datums- und Uhrzeit-Picker im Newsletter, Konsolenbefehl `ynewsletter:send` und Cronjob-Typ „YNewsletter: geplante Newsletter versenden"; terminierte Newsletter sind auf der Versandseite gesperrt, laufende Versände werden dort mit Fortschritt angezeigt und eine hängende Sperre lässt sich aufheben (#37)
 * Neue Extension Points `YNEWSLETTER_MAIL_BEFORE_SEND` und `YNEWSLETTER_MAIL_SENT` (#39)
