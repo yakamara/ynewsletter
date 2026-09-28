@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Version 1.6.1 – 28.09.2026
+--------------------------
+
+* Update-Fix: Beim Update über den Installer hat `install.php` das Tableset aus der alten Version gelesen. Dadurch fehlten nach dem Update auf 1.6.0 die Felder „Versandtermin" und „Preheader", und die Ausschlussliste blieb im YForm-Menü sichtbar. Wer von 1.6.0 auf 1.6.1 aktualisiert, bekommt die Felder automatisch; eine Reinstallation ist nicht mehr nötig.
+
 Version 1.6.0 – 22.09.2026
 --------------------------
 

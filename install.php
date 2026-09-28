@@ -9,8 +9,10 @@ rex_sql::factory()->setQuery(
                 type_name="select"',
 );
 
-// Legt Tabellen und YForm-Felder an bzw. gleicht sie ab (Felder werden über table_name + name erkannt)
-$content = rex_file::get(rex_path::addon('ynewsletter', 'install/tablesets/ynewsletter_tables.json'));
+// Legt Tabellen und YForm-Felder an bzw. gleicht sie ab (Felder werden über table_name + name erkannt).
+// Pfad über __DIR__, nicht rex_path::addon(): Beim Update über den Installer läuft diese Datei aus
+// dem Temp-Ordner .new.ynewsletter, während rex_path::addon() noch auf die alte Version zeigt.
+$content = rex_file::get(__DIR__ . '/install/tablesets/ynewsletter_tables.json');
 rex_yform_manager_table_api::importTablesets($content);
 
 // Spalten absichern, die bei einem Update aus älteren Versionen fehlen können.

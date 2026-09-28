@@ -57,6 +57,11 @@ Details: `.claude/references/01-versand-pipeline.md`, `02-datenmodell-und-instal
   per `rex_sql_table` die Spalten ab, die bei Updates fehlen können. YForm-Spalten dort nur
   `if (!hasColumn())` anlegen, sonst streiten sich Import und `ensureColumn` um den Spaltentyp.
   Alles darin muss idempotent bleiben.
+- **In `install.php` und `update.php` eigene Dateien nur über `__DIR__` lesen**, nie über
+  `rex_path::addon()` oder `$this->getPath()`. Der Installer führt beim Update die neue
+  `update.php` aus `redaxo/src/addons/.new.ynewsletter/` aus, bevor er den Ordner austauscht;
+  `rex_path::addon()` zeigt in dem Moment noch auf die alte Version (so fehlten in 1.6.0 nach dem
+  Update die neuen Felder).
 - **Leere YForm-datetime-Werte sind `0000-00-00 00:00:00`**, nicht NULL. `readDatetime()` in
   `rex_ynewsletter` behandelt beides als „nicht gesetzt"; SQL-Filter brauchen `NOT LIKE "0000-00-00%"`.
   Im Formular leert `pages/data_edit.php` solche Werte per JavaScript, sonst startet der YForm-
