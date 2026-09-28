@@ -16,7 +16,7 @@
 | send_at | datetime (widget input:text) | Versandtermin; leer = `0000-00-00 00:00:00` = manueller Versand |
 | sending_started_at | **keine YForm-Spalte**, datetime NULL | Versandsperre, nur per `rex_sql_table` in `install.php` angelegt |
 
-Validierungen: `empty` auf subject, article_id, email_from, group; `email` auf email_from.
+Validierungen: `empty` auf subject, article_id, email_from, group; `type` (Typ `email`, `not_required`) auf email_from.
 
 ### `rex_ynewsletter_group` → `rex_ynewsletter_group`
 | Feld | Typ | Bemerkung |

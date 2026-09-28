@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Version 1.6.2 – 28.09.2026
+--------------------------
+
+* Absender-Validierung: Das Tableset nutzte noch `validate email`, das es seit YForm 4 nicht mehr gibt. Die E-Mail-Adresse des Absenders wurde deshalb nicht geprüft, und weil YForm Felder ohne Klasse beim Abgleich übergeht, legte jede Installation und jedes Update eine weitere Kopie an. Jetzt `validate type` mit Typ `email`; die alten Einträge und ihre angesammelten Duplikate werden beim Update entfernt.
+
 Version 1.6.1 – 28.09.2026
 --------------------------
 
